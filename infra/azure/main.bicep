@@ -10,6 +10,9 @@ param image string
 @description('Kontaktadresse des Betreibers für den User-Agent gegenüber den Datenquellen.')
 param kontakt string
 
+@description('Name, Anschrift und Kontakt des Betreibers für die Offenlegung auf der Startseite.')
+param betreiber string = ''
+
 @description('Eigene Domain ohne Schema, z. B. amtsblick.at. Leer: nur die Adresse der Plattform.')
 param domain string = ''
 
@@ -55,6 +58,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
           }
           env: [
             { name: 'Amtsblick__Kontakt', value: kontakt }
+            { name: 'Amtsblick__Http__Betreiber', value: betreiber }
             // Der Eingang der Plattform reicht den Host-Header durch; angenommen werden nur die
             // eigene Domain und die Adresse der Plattform.
             {

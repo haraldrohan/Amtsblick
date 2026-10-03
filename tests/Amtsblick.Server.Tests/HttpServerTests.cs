@@ -187,6 +187,7 @@ public sealed class SeitenTests : IAsyncLifetime
             {
                 ["Amtsblick:AutoImport"] = "false",
                 ["Amtsblick:DatenVerzeichnis"] = Path.Combine(Path.GetTempPath(), $"amtsblick-test-{Guid.NewGuid():N}"),
+                ["Amtsblick:Http:Betreiber"] = "Erika Muster, Beispielgasse 1, 4400 Steyr <test@example.org>",
                 ["AllowedHosts"] = "*",
             });
         });
@@ -213,6 +214,7 @@ public sealed class SeitenTests : IAsyncLifetime
         Assert.Contains("href=\"https://github.com/haraldrohan/Amtsblick#einbinden\"", html);
         Assert.Contains("href=\"/datenschutz\"", html);
         Assert.Contains("<code>/mcp</code>", html);
+        Assert.Contains("Betreiber und Medieninhaber: Erika Muster, Beispielgasse 1, 4400 Steyr &lt;test@example.org&gt;", html);
         Assert.DoesNotContain("<script", html);
         Assert.False(antwort.Headers.Contains("Set-Cookie"));
     }

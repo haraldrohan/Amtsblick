@@ -125,6 +125,7 @@ jobs:
             --parameters image="ghcr.io/${GITHUB_REPOSITORY,,}:${{ needs.pruefen.outputs.version }}" \
                          kontakt="${{ secrets.AMTSBLICK_KONTAKT }}" \
                          domain="${{ vars.AMTSBLICK_DOMAIN }}" \
+                         betreiber="${{ vars.AMTSBLICK_BETREIBER }}" \
             --query properties.outputs.adresse.value -o tsv | tee adresse.txt
       - name: Server antwortet
         run: |

@@ -3,6 +3,7 @@ using System.Reflection;
 using Amtsblick.Core;
 using Amtsblick.Core.Http;
 using Markdig;
+using Microsoft.Extensions.Options;
 
 namespace Amtsblick.Server;
 
@@ -25,7 +26,7 @@ public static class Seiten
             + "<p><a href=\"/\">Zur Startseite</a></p>");
     });
 
-    public static IResult Start() => Results.Content(
+    public static IResult Start(IOptions<HttpOptionen> optionen) => Results.Content(
         Rahmen("Amtsblick", $"""
             <h1>Amtsblick</h1>
             <p>Amtliche österreichische Daten nach Ort, als MCP-Server für KI-Assistenten: Wetterprognose und
@@ -43,9 +44,15 @@ public static class Seiten
             </ul>
             <p>Keine amtliche Unwetter- oder Hochwasserwarnung. Maßgeblich sind die Warndienste von GeoSphere Austria
             und der Länder. Alle Daten stehen unter CC BY 4.0 der jeweiligen Quelle.</p>
+            {Offenlegung(optionen.Value.Betreiber)}
             <p><small>Amtsblick {WebUtility.HtmlEncode(UserAgent.Version)}</small></p>
             """),
         "text/html; charset=utf-8");
+
+    private static string Offenlegung(string betreiber) =>
+        string.IsNullOrWhiteSpace(betreiber)
+            ? ""
+            : $"<h2>Offenlegung</h2><p>Betreiber und Medieninhaber: {WebUtility.HtmlEncode(betreiber.Trim())}</p>";
 
     public static IResult Datenschutz() => Results.Content(DatenschutzHtml.Value, "text/html; charset=utf-8");
 

@@ -26,6 +26,12 @@ public sealed class HttpOptionen
     /// aus X-Forwarded-For. Aus (Standard): es gilt die Adresse der Verbindung.
     /// </summary>
     public bool HinterProxy { get; set; }
+
+    /// <summary>
+    /// Name, Anschrift und Kontakt des Betreibers dieser Instanz für die Offenlegung auf der Startseite.
+    /// Leer: die Startseite nennt keinen Betreiber.
+    /// </summary>
+    public string Betreiber { get; set; } = "";
 }
 
 /// <summary>

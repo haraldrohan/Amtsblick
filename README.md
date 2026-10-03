@@ -171,6 +171,9 @@ Direkt gestartet lauscht der Server auf `http://localhost:5210`, im Container au
 - **Logs:** nur Methode, Pfad, Statuscode und Dauer. Keine IP-Adresse, keine Anfrageinhalte, keine Orte.
 - **Pegel vorladen:** Im Container ist `Module:Wasser:Vorladen` eingeschaltet; der Bestand wird
   stündlich geholt, das Abrufmuster bleibt bei einem Abruf pro Stunde.
+- **Eigene Instanz:** Wer Amtsblick selbst hostet, ist dafür der Betreiber. `Http:Betreiber` mit den
+  eigenen Angaben setzen und `DATENSCHUTZ.md` vor dem Bauen durch die eigene Erklärung ersetzen; die
+  Datei im Repository gilt für die Instanz des Projektinhabers.
 
 ## Konfiguration
 
@@ -189,6 +192,7 @@ Umgebungsvariable setzen (`:` wird zu `__`).
 | `Http:AnfragenProMinute` | `60` | Rate-Limit je Client-IP für den HTTP-Transport |
 | `Http:ErlaubteUrspruenge` | `https://claude.ai`, `https://claude.com` | Ursprünge, deren Browser-Anfragen angenommen werden |
 | `Http:HinterProxy` | `false` | Client-IP aus `X-Forwarded-For` des vorgeschalteten Proxys nehmen |
+| `Http:Betreiber` | leer | Name, Anschrift und Kontakt des Betreibers für die Offenlegung auf der Startseite |
 
 Ein beim Start abgeschaltetes Modul wird nicht registriert: seine Tools erscheinen nicht und es ruft
 nichts ab. `Module:Wasser:Aktiv` wirkt zusätzlich sofort: Wird der Wert in der `appsettings.json`
