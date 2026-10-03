@@ -205,7 +205,9 @@ public sealed class WetterAuskunft(OrtResolver orte, WetterDienst dienst, Statis
         }
         else
         {
-            hinweise.Add("Nowcast derzeit nicht verfügbar; Werte aus der stündlichen Prognose.");
+            hinweise.Add(nowcast?.WirdGeladen == true
+                ? "Nowcast wird noch geladen, weil GeoSphere langsam antwortet; vorerst Werte aus der stündlichen Prognose. Dieselbe Frage liefert in Kürze die 15-Minuten-Werte."
+                : "Nowcast derzeit nicht verfügbar; Werte aus der stündlichen Prognose.");
         }
 
         var prognose = await dienst.HoleAsync(Ressource.Prognose, aufloesung.Punkt, ct);
@@ -283,7 +285,9 @@ public sealed class WetterAuskunft(OrtResolver orte, WetterDienst dienst, Statis
 
         if (abruf.Veraltet && abruf.Abgerufen is { } alt)
         {
-            hinweise.Add($"Stand aus dem Cache vom {Zeit.Kurz(alt)}; eine Aktualisierung war nicht möglich.");
+            hinweise.Add(abruf.WirdGeladen
+                ? $"Stand aus dem Cache vom {Zeit.Kurz(alt)}; neuere Daten werden gerade geladen."
+                : $"Stand aus dem Cache vom {Zeit.Kurz(alt)}; eine Aktualisierung war nicht möglich.");
         }
 
         hinweise.Add(Hinweis);

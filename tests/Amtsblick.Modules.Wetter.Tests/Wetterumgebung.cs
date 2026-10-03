@@ -24,7 +24,21 @@ public sealed class Wetterumgebung
 
     public Wetterumgebung()
     {
-        Netz = new AufzeichnenderHandler(Antworte);
+        Netz = new AufzeichnenderHandler(async anfrage =>
+        {
+            var url = anfrage.RequestUri!.ToString();
+            if (NowcastSperre is { } sperre && url.Contains(NowcastDaten))
+            {
+                await sperre.Task;
+            }
+
+            if (MetadatenSperre is { } metadatenSperre && url.EndsWith("/metadata", StringComparison.Ordinal))
+            {
+                await metadatenSperre.Task;
+            }
+
+            return Antworte(anfrage);
+        });
         Kontingent = new KontingentRegister(Zeit);
         var takt = new Anfragetakt(Zeit, proSekunde: 100);
         var client = new GeoSphereClient(
@@ -45,6 +59,12 @@ public sealed class Wetterumgebung
 
     public HttpStatusCode Status { get; set; } = HttpStatusCode.OK;
     public HttpStatusCode MetadatenStatus { get; set; } = HttpStatusCode.OK;
+
+    /// <summary>Hält die Antwort auf den Nowcast-Abruf zurück, bis die Aufgabe abgeschlossen wird.</summary>
+    public TaskCompletionSource? NowcastSperre { get; set; }
+
+    /// <summary>Hält die Antwort auf Metadaten-Abrufe zurück, bis die Aufgabe abgeschlossen wird.</summary>
+    public TaskCompletionSource? MetadatenSperre { get; set; }
 
     /// <summary>Ersetzt last_forecast_reftime in den Prognose-Metadaten.</summary>
     public string? PrognoseLauf { get; set; }

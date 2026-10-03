@@ -359,3 +359,60 @@ public class StoerungTests
         Assert.StartsWith("Steyr (Oberösterreich)", teil.Zusammenfassung);
     }
 }
+
+public class LangsameQuelleTests
+{
+    [Fact]
+    public async Task Langsamer_Nowcast_wird_nach_kurzer_Wartezeit_durch_die_Prognose_ersetzt_und_im_Hintergrund_fertig_geladen()
+    {
+        var umgebung = new Wetterumgebung { NowcastSperre = new TaskCompletionSource() };
+
+        // Der Aufruf wartet auf den Nowcast, bis die Geduld abgelaufen ist.
+        var aufruf = umgebung.Auskunft.NiederschlagJetztAsync("Steyr");
+        Assert.False(aufruf.IsCompleted);
+        umgebung.Zeit.Advance(WetterDienst.Geduld);
+        var ersatz = Json(await aufruf.WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.False(ersatz.GetProperty("nowcast_aktuell").GetBoolean());
+        Assert.Equal("nwp-v2-1h-1km", ersatz.GetProperty("datensatz").GetString());
+        Assert.Contains(Hinweise(ersatz), h => h.StartsWith("Nowcast wird noch geladen"));
+        Assert.Contains(WetterAuskunft.Hinweis, Hinweise(ersatz));
+
+        // Der zurückgehaltene Abruf wird fertig und füllt den Cache: kein zweiter Abruf nötig.
+        umgebung.NowcastSperre.SetResult();
+        var danach = Json(await umgebung.Auskunft.NiederschlagJetztAsync("Steyr"));
+
+        Assert.True(danach.GetProperty("nowcast_aktuell").GetBoolean());
+        Assert.Equal("15 min", danach.GetProperty("schrittweite").GetString());
+        Assert.Equal(1, umgebung.Netz.Anzahl(NowcastDaten));
+    }
+
+    [Fact]
+    public async Task Waehrend_ein_langsamer_Abruf_laeuft_loest_eine_zweite_Frage_keinen_weiteren_aus()
+    {
+        var umgebung = new Wetterumgebung { NowcastSperre = new TaskCompletionSource() };
+
+        var erster = umgebung.Auskunft.NiederschlagJetztAsync("Steyr");
+        var zweiter = umgebung.Auskunft.NiederschlagJetztAsync("Steyr");
+        umgebung.Zeit.Advance(WetterDienst.Geduld);
+        await Task.WhenAll(erster, zweiter).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal(1, umgebung.Netz.Anzahl(NowcastDaten));
+        umgebung.NowcastSperre.SetResult();
+    }
+
+    [Fact]
+    public async Task Langsame_Metadaten_halten_die_Prognose_nicht_auf()
+    {
+        var umgebung = new Wetterumgebung { MetadatenSperre = new TaskCompletionSource() };
+
+        var aufruf = umgebung.Auskunft.PrognoseAsync("Steyr");
+        Assert.False(aufruf.IsCompleted);
+        umgebung.Zeit.Advance(WetterDienst.MetadatenGeduld);
+        var teil = await aufruf.WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.StartsWith("Steyr (Oberösterreich), nächste 48 h: 8,1 bis 22,8 °C", teil.Zusammenfassung);
+        Assert.Equal(1, umgebung.Netz.Anzahl(PrognoseDaten));
+        umgebung.MetadatenSperre.SetResult();
+    }
+}

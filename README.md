@@ -186,6 +186,10 @@ Maßgeblich sind die Warndienste des Landes."
   Ist der Nowcast-Lauf älter als eine Stunde, antwortet `niederschlag_jetzt` mit dem Hinweis
   „Nowcast derzeit nicht aktuell" und weicht auf die Stundenprognose aus.
 - Nach einem gescheiterten Abruf wird derselbe Punkt eine Minute lang nicht erneut angefragt.
+- Antwortet GeoSphere langsam, wartet ein Tool-Aufruf höchstens 8 Sekunden auf Daten (3 Sekunden auf
+  Metadaten) und antwortet dann mit dem, was vorliegt – `niederschlag_jetzt` etwa mit Stundenwerten
+  aus der Prognose. Der Abruf läuft im Hintergrund zu Ende und füllt den Cache für die nächste Frage;
+  ein zweiter Abruf wird dafür nicht ausgelöst.
 - Abgerufene Parameter: Prognose `2t, tp, rain, sf, snowlmt, 10u, 10v, 10fg, tcc, sund`; Nowcast
   `rr, pt, t2m, ff, fx`. Umgerechnet wird kg/m² → mm (1:1), m/s → km/h, `10u`/`10v` → Geschwindigkeit
   und Richtung, Sekunden → Minuten. Das Wettersymbol `sy` wird nicht ausgegeben und der

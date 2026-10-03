@@ -14,7 +14,8 @@ public static class WetterRegistrierung
 
     public static IServiceCollection AddWetterModul(this IServiceCollection services)
     {
-        services.AddAmtsblickHttpClient(GeoSphereClient.Quelle, TimeSpan.FromSeconds(20), wiederholungen: 2);
+        // Großzügiges Timeout: Aufrufer warten nur WetterDienst.Geduld, der Abruf darf im Hintergrund fertig werden.
+        services.AddAmtsblickHttpClient(GeoSphereClient.Quelle, TimeSpan.FromSeconds(60), wiederholungen: 2);
         services.AddSingleton(sp => new GeoSphereClient(
             sp.GetRequiredService<IHttpClientFactory>(),
             new Anfragetakt(sp.GetRequiredService<TimeProvider>(), AnfragenProSekunde)));

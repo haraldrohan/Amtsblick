@@ -12,7 +12,9 @@ namespace Amtsblick.Modules.Wetter;
 /// <param name="Reihe">Null, wenn weder Upstream noch Cache etwas liefern.</param>
 /// <param name="NurCache">Kontingent fast ausgeschöpft: es wurde bewusst nicht angefragt.</param>
 /// <param name="Veraltet">Cache-Eintrag ist abgelaufen und konnte nicht erneuert werden.</param>
-public sealed record Abruf(Zeitreihe? Reihe, DateTimeOffset? Abgerufen, bool NurCache, bool Veraltet, string? Fehler);
+/// <param name="WirdGeladen">GeoSphere antwortet langsam: der Abruf läuft im Hintergrund weiter und füllt den Cache.</param>
+public sealed record Abruf(
+    Zeitreihe? Reihe, DateTimeOffset? Abgerufen, bool NurCache, bool Veraltet, string? Fehler, bool WirdGeladen = false);
 
 /// <summary>
 /// Zeitreihen der GeoSphere mit Cache und Kontingentschutz. Ein Abruf je Ressource und Punkt
@@ -25,6 +27,18 @@ public sealed class WetterDienst(
     public const int Reserve = 20;
 
     public const int LimitProStunde = 240;
+
+    /// <summary>
+    /// So lange wartet ein Aufrufer auf Daten. Dauert der Abruf länger, bekommt er eine Antwort ohne
+    /// diese Daten; der Abruf läuft weiter und steht der nächsten Anfrage aus dem Cache zur Verfügung.
+    /// </summary>
+    public static readonly TimeSpan Geduld = TimeSpan.FromSeconds(8);
+
+    /// <summary>Wie <see cref="Geduld"/>, für die Metadaten; ohne sie wird mit dem letzten bekannten Lauf gearbeitet.</summary>
+    public static readonly TimeSpan MetadatenGeduld = TimeSpan.FromSeconds(3);
+
+    private const string LangsamText =
+        "GeoSphere antwortet derzeit langsam; die Daten werden im Hintergrund geladen und stehen in Kürze bereit.";
 
     private static readonly TimeSpan MetadatenTtl = TimeSpan.FromMinutes(15);
 
@@ -43,8 +57,9 @@ public sealed class WetterDienst(
         kontingent.IstKnapp(GeoSphereClient.Quelle, Reserve) || takt.AnfragenLetzteStunde >= LimitProStunde - Reserve;
 
     /// <summary>
-    /// Metadaten der Ressource, höchstens alle 15 Minuten neu geholt. Null, wenn sie nicht zu bekommen
-    /// sind; auch das wird 15 Minuten gemerkt, damit eine Störung kein Kontingent verbraucht.
+    /// Metadaten der Ressource, höchstens alle 15 Minuten neu geholt. Null, wenn sie nicht oder nicht
+    /// rechtzeitig zu bekommen sind; ein Fehlschlag wird 15 Minuten gemerkt, damit eine Störung kein
+    /// Kontingent verbraucht.
     /// </summary>
     public async Task<Metadaten?> MetadatenAsync(Ressource ressource, CancellationToken ct = default)
     {
@@ -53,7 +68,7 @@ public sealed class WetterDienst(
             return _metadaten.Lies(ressource.Id)?.Wert;
         }
 
-        var eintrag = await _metadaten.HoleAsync(ressource.Id, async abbruch =>
+        var laden = _metadaten.HoleAsync(ressource.Id, async abbruch =>
         {
             try
             {
@@ -64,8 +79,11 @@ public sealed class WetterDienst(
                 log?.LogWarning("Metadaten von {Ressource} nicht abrufbar: {Fehler}", ressource.Id, fehler.Message);
                 return (null, MetadatenTtl);
             }
-        }, ct);
-        return eintrag.Wert;
+        });
+
+        return await InnerhalbAsync(laden, MetadatenGeduld, ct)
+            ? (await laden).Wert
+            : _metadaten.Lies(ressource.Id)?.Wert;
     }
 
     public async Task<Abruf> HoleAsync(Ressource ressource, Koordinate punkt, CancellationToken ct = default)
@@ -95,21 +113,52 @@ public sealed class WetterDienst(
             return Gescheitert(eintrag, letzter.Text);
         }
 
+        var laden = LadeUndMerkeAsync(schluessel, ressource, punkt);
+        if (!await InnerhalbAsync(laden, Geduld, ct))
+        {
+            return new Abruf(eintrag?.Wert, eintrag?.Abgerufen, NurCache: false, Veraltet: eintrag is not null, LangsamText, WirdGeladen: true);
+        }
+
+        var (neu, fehler) = await laden;
+        return neu is not null
+            ? new Abruf(neu.Wert, neu.Abgerufen, NurCache: false, Veraltet: false, null)
+            : Gescheitert(eintrag, fehler!);
+    }
+
+    // Läuft unabhängig vom Aufrufer zu Ende, damit auch ein langsamer Abruf den Cache füllt.
+    private async Task<(CacheEintrag<Zeitreihe>? Eintrag, string? Fehler)> LadeUndMerkeAsync(
+        (string Ressource, Koordinate Punkt) schluessel, Ressource ressource, Koordinate punkt)
+    {
         try
         {
             var neu = await _reihen.LadeAsync(
                 schluessel,
-                async abbruch => (await client.HoleZeitreiheAsync(ressource, punkt, abbruch), ressource.Ttl),
-                ct);
+                async abbruch => (await client.HoleZeitreiheAsync(ressource, punkt, abbruch), ressource.Ttl));
             _fehler.TryRemove(schluessel, out _);
-            return new Abruf(neu.Wert, neu.Abgerufen, NurCache: false, Veraltet: false, null);
+            return (neu, null);
         }
         catch (Exception fehler) when (IstAbruffehler(fehler))
         {
             log?.LogWarning("Abruf von {Ressource} für {Punkt} gescheitert: {Fehler}", ressource.Id, punkt, fehler.Message);
             _fehler[schluessel] = (zeit.GetUtcNow(), fehler.Message);
-            return Gescheitert(eintrag, fehler.Message);
+            return (null, fehler.Message);
         }
+    }
+
+    // Wahr, wenn die Aufgabe innerhalb der Frist fertig wird. Die Aufgabe selbst läuft in jedem Fall weiter.
+    private async Task<bool> InnerhalbAsync(Task aufgabe, TimeSpan frist, CancellationToken ct)
+    {
+        if (aufgabe.IsCompleted)
+        {
+            return true;
+        }
+
+        using var abbruch = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        var ablauf = Task.Delay(frist, zeit, abbruch.Token);
+        var erste = await Task.WhenAny(aufgabe, ablauf);
+        await abbruch.CancelAsync();
+        ct.ThrowIfCancellationRequested();
+        return erste == aufgabe;
     }
 
     private static Abruf Gescheitert(CacheEintrag<Zeitreihe>? eintrag, string fehler) =>
