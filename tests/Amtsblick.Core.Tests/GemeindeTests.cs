@@ -71,6 +71,7 @@ public class GemeindeTests
 
             Assert.Equal(3, verzeichnis.Alle.Count);
             Assert.Equal(new DateOnly(2026, 1, 1), verzeichnis.Gebietsstand);
+            Assert.InRange(verzeichnis.Importiert!.Value, DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddMinutes(1));
             var steyr = verzeichnis.NachGkz("40201")!;
             Assert.Equal("Steyr", steyr.Name);
             Assert.Equal("Stadt Steyr", steyr.Bezirk);

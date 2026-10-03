@@ -37,7 +37,9 @@ public sealed class WetterAuskunft(OrtResolver orte, WetterDienst dienst, Statis
         NiederschlagsartCode = "Rohwert der GeoSphere; keine amtliche Code-Tabelle veröffentlicht",
     };
 
-    public IEnumerable<Quellenvermerk> Quellen() => [Vermerk(Ressource.Prognose, null), Vermerk(Ressource.Nowcast, null)];
+    public IEnumerable<Quellenvermerk> Quellen() =>
+        new[] { Ressource.Prognose, Ressource.Nowcast }
+            .Select(r => Vermerk(r, null) with { LetzterAbruf = Zeit.Iso(dienst.LetzterAbruf(r)) });
 
     /// <summary>Wortlaut laut Nutzungsbedingungen des GeoSphere Austria Data Hub.</summary>
     public const string Namensnennung = "Datenquelle: GeoSphere Austria - https://data.hub.geosphere.at";

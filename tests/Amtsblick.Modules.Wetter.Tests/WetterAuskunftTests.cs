@@ -417,3 +417,19 @@ public class LangsameQuelleTests
         umgebung.MetadatenSperre.SetResult();
     }
 }
+
+public class WetterQuellenTests
+{
+    [Fact]
+    public async Task Quellen_nennt_je_Datensatz_den_letzten_Abruf()
+    {
+        var umgebung = new Wetterumgebung();
+        Assert.All(umgebung.Auskunft.Quellen(), q => Assert.Null(q.LetzterAbruf));
+
+        await umgebung.Auskunft.PrognoseAsync("Steyr");
+        var quellen = umgebung.Auskunft.Quellen().ToDictionary(q => q.Datensatz!);
+
+        Assert.Equal("2026-10-02T21:05+02:00", quellen["nwp-v2-1h-1km"].LetzterAbruf);
+        Assert.Null(quellen["nowcast-v1-15min-1km"].LetzterAbruf);
+    }
+}

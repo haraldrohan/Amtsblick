@@ -10,6 +10,7 @@ namespace Amtsblick.Core.Quellen;
 /// <param name="Doi">Dauerhafte Kennung des Datensatzes als URL, sofern der Datengeber eine vergibt.</param>
 /// <param name="Stand">Zeitpunkt oder Datum, auf das sich die Daten beziehen (ISO 8601).</param>
 /// <param name="Bearbeitung">Was Amtsblick an den Daten verändert hat (CC BY 4.0, Abschnitt 3(a)(1)(B)).</param>
+/// <param name="LetzterAbruf">Wann Amtsblick diese Quelle zuletzt erfolgreich abgerufen hat; im Tool <c>quellen</c>.</param>
 public sealed record Quellenvermerk(
     string Quelle,
     string Lizenz,
@@ -19,7 +20,8 @@ public sealed record Quellenvermerk(
     string? Datensatz = null,
     string? Doi = null,
     string? Stand = null,
-    string? Bearbeitung = null)
+    string? Bearbeitung = null,
+    string? LetzterAbruf = null)
 {
     public const string CcBy40 = "CC BY 4.0";
     public const string CcBy40Link = "https://creativecommons.org/licenses/by/4.0/deed.de";
@@ -46,5 +48,5 @@ public sealed class StatistikAustriaQuelle(GemeindeVerzeichnis verzeichnis) : IQ
         Stand: verzeichnis.Gebietsstand?.ToString("yyyy-MM-dd"),
         Bearbeitung: "Gemeindemittelpunkte aus den Grenzen berechnet, Schreibweise der Bezirksnamen vereinheitlicht, Wien als Ganzes ergänzt");
 
-    public IEnumerable<Quellenvermerk> Quellen() => [Vermerk];
+    public IEnumerable<Quellenvermerk> Quellen() => [Vermerk with { LetzterAbruf = Zeit.Iso(verzeichnis.Importiert) }];
 }

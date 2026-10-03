@@ -10,7 +10,9 @@ denen jeder Beitrag gemessen wird.
 2. **Die Lizenz muss klar sein, sonst wird die Quelle nicht verwendet.** Lizenz und verlangter
    Quellenvermerk werden bei der Quelle selbst nachgelesen und mit Fundstelle in
    [docs/vorab-pruefung.md](docs/vorab-pruefung.md) festgehalten. Ist die Lizenz unklar,
-   widersprüchlich oder nur vom Hörensagen bekannt, bleibt die Quelle draußen.
+   widersprüchlich oder nur vom Hörensagen bekannt, bleibt die Quelle draußen. Infrage kommen nur
+   Quellen unter CC BY oder einer gleichwertigen Lizenz, die ohne Vertrag und ohne Registrierung
+   nutzbar sind.
 3. **Vermerke wörtlich.** Jede Tool-Antwort nennt je Quelle den Vermerk im Wortlaut des Datengebers,
    die Lizenz mit Link zum Lizenztext, den Link zur Quelle und die Angabe, was Amtsblick an den Daten
    verändert hat. Diese Angabe muss je Datensatz stimmen.
@@ -21,7 +23,10 @@ denen jeder Beitrag gemessen wird.
    Abruf für alle Nutzer, Beachtung der Limits, keine Wiederholungen ins Leere, User-Agent mit
    Projekt-URL und Kontaktadresse. Angesprochen werden nur die dokumentierten Endpunkte.
 6. **Keine Nutzerdaten, keine Telemetrie.** Anfragen werden nicht gespeichert.
-7. **Keine persönlichen Angaben im Repository.** Kontaktadressen gehören in die lokale Konfiguration
+7. **Bezug zum Ort.** Ein Modul muss sich über Gemeindekennziffer oder Koordinate mit dem Kern oder
+   mit einem bestehenden Modul verknüpfen lassen. Eine Einzelquelle ohne diese Verknüpfung kommt
+   nicht hinein; der Kern ändert sich für ein neues Modul nicht.
+8. **Keine persönlichen Angaben im Repository.** Kontaktadressen gehören in die lokale Konfiguration
    (`Amtsblick__Kontakt`, `.mcp.json`), nicht in versionierte Dateien.
 
 ## Ein neues Modul

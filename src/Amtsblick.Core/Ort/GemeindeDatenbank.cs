@@ -94,7 +94,18 @@ public static class GemeindeDatenbank
             }
         }
 
-        return new GemeindeVerzeichnis(gemeinden, gebietsstand);
+        DateTimeOffset? importiert = null;
+        using (var abfrage = verbindung.CreateCommand())
+        {
+            abfrage.CommandText = "SELECT wert FROM meta WHERE schluessel = 'importiert'";
+            if (abfrage.ExecuteScalar() is string wert
+                && DateTimeOffset.TryParse(wert, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var zeitpunkt))
+            {
+                importiert = zeitpunkt;
+            }
+        }
+
+        return new GemeindeVerzeichnis(gemeinden, gebietsstand, importiert);
     }
 
     private static SqliteConnection Oeffne(string pfad, SqliteOpenMode modus)

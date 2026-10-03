@@ -240,3 +240,38 @@ public class ZahlenformatTests
         Assert.DoesNotMatch(@",00 ", teil.Zusammenfassung);
     }
 }
+
+public class QuellenangabeTests
+{
+    [Fact]
+    public async Task Quellen_nennt_den_letzten_Abruf_ohne_selbst_abzurufen()
+    {
+        var umgebung = new Wasserumgebung();
+
+        var vorher = Assert.Single(umgebung.Auskunft.Quellen());
+        Assert.Null(vorher.LetzterAbruf);
+        Assert.Empty(umgebung.Netz.Anfragen);
+
+        await umgebung.Auskunft.HochwasserlageAsync();
+        var nachher = Assert.Single(umgebung.Auskunft.Quellen());
+
+        Assert.Equal("2026-10-02T21:07+02:00", nachher.LetzterAbruf);
+        Assert.Equal(2, umgebung.Netz.Anfragen.Count);
+    }
+
+    [Fact]
+    public async Task Jede_Pegel_Antwort_uebernimmt_den_Haftungsausschluss_des_Datengebers()
+    {
+        var umgebung = new Wasserumgebung();
+
+        var antworten = new[]
+        {
+            await umgebung.Auskunft.InDerNaeheAsync("Steyr"),
+            await umgebung.Auskunft.AnGewaesserAsync("Enns"),
+            await umgebung.Auskunft.HochwasserlageAsync(),
+        };
+
+        Assert.All(antworten, a => Assert.Contains(PegelAuskunft.Gewaehr, a.Hinweise));
+        Assert.All(antworten, a => Assert.Equal(PegelAuskunft.Hinweis, a.Hinweise[^1]));
+    }
+}

@@ -22,7 +22,7 @@ demselben Muster.
 | Tool | Zweck |
 |---|---|
 | `ort_finden(text)` | Gemeinde nach Name, GKZ oder Koordinate suchen |
-| `quellen()` | Quellen, Lizenzen, Vermerke und verbleibendes Anfragekontingent |
+| `quellen()` | Quellen, Lizenzen, Vermerke, Zeitpunkt des letzten Abrufs und verbleibendes Anfragekontingent |
 | `wetter_prognose(ort, stunden = 48)` | Prognose in 6-Stunden-Blöcken plus Tageswerte |
 | `niederschlag_jetzt(ort)` | Niederschlag der nächsten 3 Stunden in 15-Minuten-Schritten |
 | `lage_am_ort(ort)` | Wetter, Nowcast und nächstgelegene Pegel in einem Aufruf |
@@ -220,6 +220,8 @@ zwar zurückhaltend so:
   403 oder 429, wird nicht auf dem zweiten Weg nachgefasst.
 - Jede Anfrage trägt den User-Agent mit Kontaktadresse; ohne Kontaktadresse wird nicht abgerufen.
 - Das Modul ist per Konfiguration sofort abschaltbar (siehe oben).
+- Vor einem öffentlichen, gehosteten Betrieb wird das BMLUK als Datengeber über Amtsblick und dieses
+  Abrufmuster informiert (wasserhaushalt@bmluk.gv.at). Widerspricht es, wird das Modul abgeschaltet.
 
 Jede Pegel-Antwort nennt den Stand des letzten Abrufs; die Werte können bis zu einer Stunde älter
 sein als beim Hydrographischen Dienst. Lage (Nieder-/Mittelwasser, erhöhte Wasserführung,

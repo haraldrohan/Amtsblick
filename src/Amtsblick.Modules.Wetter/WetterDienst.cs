@@ -48,6 +48,11 @@ public sealed class WetterDienst(
     private readonly TtlCache<(string Ressource, Koordinate Punkt), Zeitreihe> _reihen = new(zeit);
     private readonly TtlCache<string, Metadaten?> _metadaten = new(zeit);
     private readonly ConcurrentDictionary<(string Ressource, Koordinate Punkt), (DateTimeOffset Zeit, string Text)> _fehler = new();
+    private readonly ConcurrentDictionary<string, DateTimeOffset> _letzterAbruf = new();
+
+    /// <summary>Zeitpunkt des letzten erfolgreichen Abrufs dieser Ressource, gleich für welchen Punkt.</summary>
+    public DateTimeOffset? LetzterAbruf(Ressource ressource) =>
+        _letzterAbruf.TryGetValue(ressource.Id, out var zeitpunkt) ? zeitpunkt : null;
 
     /// <summary>
     /// Wahr, wenn GeoSphere zuletzt weniger als <see cref="Reserve"/> Restanfragen gemeldet hat oder die
@@ -135,6 +140,7 @@ public sealed class WetterDienst(
                 schluessel,
                 async abbruch => (await client.HoleZeitreiheAsync(ressource, punkt, abbruch), ressource.Ttl));
             _fehler.TryRemove(schluessel, out _);
+            _letzterAbruf[ressource.Id] = neu.Abgerufen;
             return (neu, null);
         }
         catch (Exception fehler) when (IstAbruffehler(fehler))

@@ -49,6 +49,21 @@ public sealed class PegelDienst(
     private DateTimeOffset? _letzterVersuch;
     private Pegelstand _stand = new([], null, false, null, null);
 
+    /// <summary>Der bekannte Stand aus Speicher oder Datei, ohne einen Abruf auszulösen.</summary>
+    public Pegelstand BekannterStand()
+    {
+        lock (_sperre)
+        {
+            if (!_geladen)
+            {
+                _geladen = true;
+                LadeGespeichertenStand();
+            }
+
+            return _stand;
+        }
+    }
+
     public async Task<Pegelstand> StandAsync(CancellationToken ct = default)
     {
         if (istAktiv is not null && !istAktiv())

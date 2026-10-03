@@ -10,10 +10,19 @@ public sealed class PegelAuskunft(PegelDienst dienst, OrtResolver orte, Statisti
 {
     public const string Hinweis = "Keine amtliche Warnung. Maßgeblich sind die Warndienste des Landes.";
 
-    private const int MaxInDerNaehe = 20;
-    private const int MaxJeStufe = 50;
+    /// <summary>Haftungsausschluss des Datengebers laut Metadaten des Dienstes, sinngemäß übernommen.</summary>
+    public const string Gewaehr =
+        "Ohne Gewähr: Für Richtigkeit und Vollständigkeit der Daten und für Schäden aus solchen Mängeln wird keine Haftung übernommen.";
 
-    public IEnumerable<Quellenvermerk> Quellen() => [Vermerk(null)];
+    private const int MaxInDerNaehe = 20;
+    private const int MaxJeStufe = 20;
+
+    public IEnumerable<Quellenvermerk> Quellen()
+    {
+        // Nur der bekannte Stand: das Tool quellen löst keinen Abruf aus.
+        var abgerufen = dienst.BekannterStand().Abgerufen;
+        return [Vermerk(abgerufen) with { LetzterAbruf = Zeit.Iso(abgerufen) }];
+    }
 
     /// <summary>Wortlaut laut Metadaten des Dienstes; "ehyd.gv.at" ist als Link auf https://ehyd.gv.at zu setzen.</summary>
     public const string Namensnennung = "Datenquelle: ehyd.gv.at";
@@ -251,6 +260,7 @@ public sealed class PegelAuskunft(PegelDienst dienst, OrtResolver orte, Statisti
         }
 
         hinweise.Add("Der Bestand wird höchstens einmal pro Stunde abgerufen; die Werte können bis zu einer Stunde älter sein als beim Hydrographischen Dienst.");
+        hinweise.Add(Gewaehr);
         hinweise.Add(Hinweis);
         return hinweise;
     }
