@@ -483,3 +483,6 @@ $RECYCLE.BIN/
 
 # Amtsblick: importierte Referenzdaten (per scripts/import-gemeinden erzeugt)
 /data/
+
+# Lokale MCP-Konfiguration mit persönlicher Kontaktadresse
+/.mcp.json
