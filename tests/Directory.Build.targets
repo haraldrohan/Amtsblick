@@ -1,0 +1,11 @@
+<Project>
+
+  <!-- Gemeinsame Testhilfen und Fixtures für alle Testprojekte. Die Fixtures sind gespeicherte
+       Antworten der echten Dienste und stehen unter der Lizenz der jeweiligen Quelle (siehe NOTICE). -->
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Gemeinsam\*.cs" LinkBase="Gemeinsam" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\**" Link="Fixtures\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Fixtures\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

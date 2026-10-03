@@ -1,0 +1,38 @@
+Amtsblick
+Copyright (c) 2026 Amtsblick-Mitwirkende
+
+Der Quellcode dieses Projekts steht unter der MIT-Lizenz (siehe LICENSE).
+
+Die Daten, die Amtsblick abruft, importiert oder weitergibt, gehören nicht zum Projekt. Sie bleiben
+unter der Lizenz ihrer jeweiligen Quelle. Wer Antworten von Amtsblick weitergibt oder veröffentlicht,
+muss den Vermerk der Quelle wörtlich übernehmen; jede Tool-Antwort enthält ihn im Feld "quellen".
+
+1. Statistik Austria – Gliederung Österreichs in Gemeinden und Politische Bezirke
+   Datensätze: OGDEXT_GEM_1, OGDEXT_POLBEZ_1
+   Lizenz:     Creative Commons Namensnennung 4.0 International (CC BY 4.0)
+   Vermerk:    Datenquelle: Statistik Austria — data.statistik.gv.at
+   Link:       https://data.statistik.gv.at
+   Verwendung: Gemeindeverzeichnis (data/gemeinden.sqlite, per Import-Skript erzeugt, nicht im Repository).
+               Amtsblick ergänzt daraus berechnete Mittelpunkte und den Eintrag "Wien" (GKZ 90001) als
+               Zusammenfassung der 23 Wiener Gemeindebezirke.
+
+2. GeoSphere Austria – Dataset API
+   Datensätze: nwp-v2-1h-1km, nowcast-v1-15min-1km
+   Lizenz:     Creative Commons Namensnennung 4.0 International (CC BY 4.0)
+   Vermerk:    Datenquelle: GeoSphere Austria
+   Link:       https://data.hub.geosphere.at
+   Verwendung: Wetterprognose und Nowcast; Amtsblick rechnet Einheiten um und fasst Stundenwerte zusammen.
+
+3. eHYD – Hydrographischer Dienst Österreichs
+   Datensatz:  i000501:pegel_aktuell (Aktuelle Pegelstände Österreich)
+   Lizenz:     Creative Commons Namensnennung 4.0 International (CC BY 4.0)
+   Vermerk:    Datenquelle: ehyd.gv.at   (mit Link auf https://ehyd.gv.at)
+   Link:       https://ehyd.gv.at
+   Verwendung: aktuelle Pegelwerte; Amtsblick ordnet jeder Messstelle eine Gemeinde zu und übersetzt den
+               Statuscode der Quelle in Worte.
+
+Testdaten: Die Dateien unter tests/Fixtures und tests/*/Fixtures sind gespeicherte Antworten bzw.
+Ausschnitte der oben genannten Dienste (abgerufen am 2. Oktober 2026) und stehen ebenfalls unter
+CC BY 4.0 der jeweiligen Quelle, nicht unter der MIT-Lizenz.
+
+Lizenztext CC BY 4.0: https://creativecommons.org/licenses/by/4.0/legalcode.de
