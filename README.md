@@ -258,3 +258,5 @@ Die Tests laufen vollständig ohne Netz.
 ## Lizenz
 
 Code: [MIT](LICENSE). Daten: Lizenz der jeweiligen Quelle, siehe [NOTICE](NOTICE).
+
+Hinweise für Beiträge: [CONTRIBUTING.md](CONTRIBUTING.md).
