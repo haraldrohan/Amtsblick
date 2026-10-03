@@ -21,7 +21,8 @@ public sealed class EhydClient(IHttpClientFactory fabrik)
     private const int Seitengroesse = 1000;
     private const int MaxSeiten = 20;
 
-    private string? _collectionId;
+    /// <summary>Über /collections ermittelt; der <see cref="PegelDienst"/> speichert sie mit dem Stand.</summary>
+    public string? CollectionId { get; set; }
 
     /// <summary>Gesamtbestand über die OGC API Features; schlägt das fehl, einmal über WFS.</summary>
     public async Task<(IReadOnlyList<Messstelle> Messstellen, string Weg)> HoleGesamtbestandAsync(CancellationToken ct)
@@ -47,11 +48,11 @@ public sealed class EhydClient(IHttpClientFactory fabrik)
 
     private async Task<IReadOnlyList<Messstelle>> HoleUeberOgcApiAsync(CancellationToken ct)
     {
-        _collectionId ??= await ErmittleCollectionIdAsync(ct);
+        CollectionId ??= await ErmittleCollectionIdAsync(ct);
         var alle = new List<Messstelle>();
         for (var seite = 0; seite < MaxSeiten; seite++)
         {
-            var url = $"{OgcBasis}/collections/{_collectionId}/items?f=json&limit={Seitengroesse}&startIndex={alle.Count}";
+            var url = $"{OgcBasis}/collections/{CollectionId}/items?f=json&limit={Seitengroesse}&startIndex={alle.Count}";
             using var dokument = await HoleAsync(url, ct);
             var ergebnis = PegelParser.Lies(dokument.RootElement);
             alle.AddRange(ergebnis.Messstellen);
@@ -64,7 +65,7 @@ public sealed class EhydClient(IHttpClientFactory fabrik)
         return alle;
     }
 
-    // Die Collection-ID wird je Instanz einmal über /collections bestimmt.
+    // Die Collection-ID wird einmal über /collections bestimmt und danach mit dem Stand gespeichert.
     private async Task<string> ErmittleCollectionIdAsync(CancellationToken ct)
     {
         using var dokument = await HoleAsync($"{OgcBasis}/collections?f=json", ct);

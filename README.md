@@ -80,6 +80,33 @@ In `claude_desktop_config.json` (Claude Desktop → Einstellungen → Entwickler
 Danach Claude Desktop neu starten. Der Server sucht Konfiguration und Daten relativ zur Programmdatei,
 das Arbeitsverzeichnis spielt keine Rolle. Protokollausgaben gehen nach stderr.
 
+### stdio in Claude Code
+
+Im Wurzelordner des Repositorys eine Datei `.mcp.json` anlegen (sie ist von Git ausgenommen, weil sie
+die Kontaktadresse enthält):
+
+```json
+{
+  "mcpServers": {
+    "amtsblick": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": [
+        "C:\\Pfad\\zu\\Amtsblick\\src\\Amtsblick.Server\\bin\\Release\\net10.0\\Amtsblick.Server.dll",
+        "--stdio"
+      ],
+      "env": {
+        "Amtsblick__Kontakt": "ihre.adresse@example.org"
+      }
+    }
+  }
+}
+```
+
+Beim nächsten Öffnen des Ordners fragt Claude Code einmal, ob der Server zugelassen werden soll.
+Solange Claude Code oder Claude Desktop den Server verwenden, ist die DLL gesperrt; für einen neuen
+`dotnet build -c Release` den Client vorher schließen.
+
 ### Transport 2: Streamable HTTP
 
 ```sh
@@ -152,16 +179,19 @@ Dazu trägt jede Wetter-Antwort den Hinweis „Keine amtliche Unwetterwarnung." 
 Die `robots.txt` von `gis.lfrz.gv.at` lautet `User-agent: *` / `Disallow: /`. Amtsblick crawlt nicht,
 sondern ruft genau den als Open-Data-Dienst veröffentlichten Endpunkt ab, und zwar strikt so:
 
-- **Je Instanz höchstens ein Abruf des Gesamtbestands pro 60 Minuten.** Gehostet teilen sich alle
-  Nutzer diesen Abruf.
+- **Höchstens ein Abruf des Gesamtbestands pro 60 Minuten.** Gehostet teilen sich alle Nutzer diesen
+  Abruf. Der letzte Stand und der Zeitpunkt des letzten Versuchs liegen in `data/pegel_aktuell.json`,
+  sodass die Grenze auch über Neustarts hinweg gilt – wichtig für stdio, wo der Client den Server
+  bei jedem Programmstart neu startet. Mehrere Installationen mit eigenem Datenverzeichnis zählen
+  getrennt.
 - Der erste Tool-Aufruf löst den Abruf aus, danach wird 60 Minuten lang nur der Speicher gelesen.
   Gleichzeitige Aufrufe warten auf denselben Abruf.
 - Ohne Tool-Aufruf findet kein Abruf statt, auch wenn die Instanz läuft. Der Hintergrund-Timer
   (`Module:Wasser:Vorladen`) ist für den gehosteten Betrieb gedacht und standardmäßig aus.
 - Auch ein gescheiterter Versuch zählt als der Abruf der Stunde; es gibt keine Wiederholungen.
   Bis zum nächsten Versuch wird der letzte Stand geliefert und mit `veraltet: true` gekennzeichnet.
-- Angesprochen werden nur drei feste Adressen: `/collections` (einmal je Instanz, zur Ermittlung der
-  Collection-ID), `/collections/{id}/items` und – nur wenn die OGC API ausfällt – der WFS-Layer
+- Angesprochen werden nur drei feste Adressen: `/collections` (einmal, zur Ermittlung der
+  Collection-ID, die danach mitgespeichert wird), `/collections/{id}/items` und – nur wenn die OGC API ausfällt – der WFS-Layer
   `i000501:pegel_aktuell`. Links aus den Antworten werden nicht verfolgt. Antwortet der Host mit
   403 oder 429, wird nicht auf dem zweiten Weg nachgefasst.
 - Jede Anfrage trägt den User-Agent mit Kontaktadresse; ohne Kontaktadresse wird nicht abgerufen.
@@ -183,7 +213,8 @@ der Inneren Stadt, damit die Stadt als Ganzes auffindbar ist.
 ## Datenschutz
 
 Amtsblick speichert keine Anfragen und keine Daten von Nutzern und sendet keine Telemetrie. Im Speicher
-liegen nur die zuletzt abgerufenen Daten der Quellen; an die Quellen gehen nur Koordinaten (auf 0,01°
+liegen nur die zuletzt abgerufenen Daten der Quellen, auf der Platte nur die Gemeinden und der letzte
+Pegelstand; an die Quellen gehen nur Koordinaten (auf 0,01°
 gerundet) bzw. der Abruf des Gesamtbestands.
 
 ## Aufbau

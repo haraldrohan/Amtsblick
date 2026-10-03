@@ -238,7 +238,7 @@ public class AbrufmusterTests
         var einstellungen = new Dictionary<string, string?>
         {
             ["Amtsblick:Kontakt"] = "betrieb@example.org",
-            ["Amtsblick:DatenVerzeichnis"] = Path.Combine(Path.GetTempPath(), "amtsblick-test-ohne-daten"),
+            ["Amtsblick:DatenVerzeichnis"] = Path.Combine(Path.GetTempPath(), $"amtsblick-test-{Guid.NewGuid():N}"),
         };
         if (vorladen is { } schalter)
         {

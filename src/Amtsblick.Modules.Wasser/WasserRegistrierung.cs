@@ -28,6 +28,9 @@ public sealed class WasserOptionen
 
 public static class WasserRegistrierung
 {
+    /// <summary>Letzter Pegelstand im Datenverzeichnis; überdauert Neustarts.</summary>
+    public const string Speicherdatei = "pegel_aktuell.json";
+
     public static IServiceCollection AddWasserModul(this IServiceCollection services, IConfiguration konfiguration)
     {
         var abschnitt = konfiguration.GetSection(WasserOptionen.Abschnitt);
@@ -45,7 +48,8 @@ public static class WasserRegistrierung
                 sp.GetRequiredService<IOptions<AmtsblickOptionen>>(),
                 sp.GetRequiredService<TimeProvider>(),
                 () => wasser.CurrentValue.Aktiv,
-                sp.GetService<ILogger<PegelDienst>>());
+                sp.GetService<ILogger<PegelDienst>>(),
+                Path.Combine(sp.GetRequiredService<IOptions<AmtsblickOptionen>>().Value.ErmittleDatenVerzeichnis(), Speicherdatei));
         });
         services.AddSingleton<PegelAuskunft>();
         services.AddSingleton<IQuellenAnbieter>(sp => sp.GetRequiredService<PegelAuskunft>());

@@ -23,8 +23,9 @@ public sealed class Wasserumgebung
     public const int SteyrOrtskai = 205922;
     public const int Jaegerberg = 205757;
 
-    public Wasserumgebung(string kontakt = "betrieb@example.org", Func<bool>? istAktiv = null)
+    public Wasserumgebung(string kontakt = "betrieb@example.org", Func<bool>? istAktiv = null, string? speicherPfad = null, FakeTimeProvider? zeit = null)
     {
+        Zeit = zeit ?? new FakeTimeProvider(new DateTimeOffset(2026, 10, 2, 19, 7, 0, TimeSpan.Zero));
         Netz = new AufzeichnenderHandler(AntworteAsync);
         var verzeichnis = new GemeindeVerzeichnis(Testgemeinden.MitGrenzen(), new DateOnly(2026, 1, 1));
         Dienst = new PegelDienst(
@@ -32,11 +33,12 @@ public sealed class Wasserumgebung
             verzeichnis,
             Options.Create(new AmtsblickOptionen { Kontakt = kontakt }),
             Zeit,
-            istAktiv);
+            istAktiv,
+            speicherPfad: speicherPfad);
         Auskunft = new PegelAuskunft(Dienst, new OrtResolver(verzeichnis), new StatistikAustriaQuelle(verzeichnis));
     }
 
-    public FakeTimeProvider Zeit { get; } = new(new DateTimeOffset(2026, 10, 2, 19, 7, 0, TimeSpan.Zero));
+    public FakeTimeProvider Zeit { get; }
     public AufzeichnenderHandler Netz { get; }
     public PegelDienst Dienst { get; }
     public PegelAuskunft Auskunft { get; }
