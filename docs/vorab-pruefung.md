@@ -59,12 +59,14 @@ Disallow: /
 
 `https://ehyd.gv.at/robots.txt` existiert nicht (404).
 
-Einordnung: Der Endpunkt ist im INSPIRE-Geoportal als Downloaddienst „Aktuelle Pegelstände Österreich"
-unter CC BY 4.0 veröffentlicht, mit dem Vermerk „Datenquelle: ehyd.gv.at". Die `robots.txt` richtet
-sich an Crawler. Amtsblick folgt keinen Links und ruft nur den dokumentierten Endpunkt ab, höchstens
-einmal pro Stunde und mit Kontaktadresse im User-Agent (Abrufmuster siehe README). Die Entscheidung,
-unter diesen Bedingungen abzurufen, hat der Projektinhaber am 2. Oktober 2026 getroffen. Eine
-Rückfrage beim Betreiber steht aus und wäre vor einem gehosteten Betrieb sinnvoll.
+Einordnung (Entscheidung des Projektinhabers vom 3. Oktober 2026): Die `robots.txt` regelt das
+Crawlen der Website, nicht die Nutzung der API. Diese regelt die Lizenz, die der Betreiber für genau
+diesen Dienst veröffentlicht hat: Der Endpunkt ist im INSPIRE-Geoportal als Downloaddienst „Aktuelle
+Pegelstände Österreich" unter CC BY 4.0 ausgewiesen, frei für private und kommerzielle Nutzung, mit dem
+Vermerk „Datenquelle: ehyd.gv.at". Das entspricht dem Zweck des Standards (RFC 9309), der den Zugriff
+von Crawlern auf Inhalte regelt. Amtsblick crawlt nicht: Es folgt keinen Links und ruft nur den
+dokumentierten Endpunkt ab, höchstens einmal pro Stunde und mit Kontaktadresse im User-Agent
+(Abrufmuster siehe README).
 
 **Antwortverhalten** (am Prüftag von Hand mit Projekt-URL im User-Agent: zweimal `/collections`,
 einmal `items`; dazu ein Abnahmelauf des Servers mit je einem Abruf):
@@ -127,4 +129,5 @@ Befunde und Folgen:
   Verfügbarkeit aus. Der Haftungshinweis der README folgt dem.
 - **GeoSphere, Nutzungsverbote:** Die Nutzungsbedingungen untersagen die Verwendung für rechtswidrige
   und diskriminierende Zwecke; für Amtsblick ohne Folgen.
-- **robots.txt von gis.lfrz.gv.at:** betrifft den technischen Zugang, nicht die Nutzungsrechte (siehe oben).
+- **robots.txt von gis.lfrz.gv.at:** regelt das Crawlen der Website, nicht die Nutzung der API; diese
+  regelt die Lizenz (siehe oben).

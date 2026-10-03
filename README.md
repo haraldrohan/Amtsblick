@@ -193,8 +193,10 @@ Maßgeblich sind die Warndienste des Landes."
 
 ### eHYD (Pegel)
 
-Die `robots.txt` von `gis.lfrz.gv.at` lautet `User-agent: *` / `Disallow: /`. Amtsblick crawlt nicht,
-sondern ruft genau den als Open-Data-Dienst veröffentlichten Endpunkt ab, und zwar strikt so:
+Die `robots.txt` von `gis.lfrz.gv.at` lautet `User-agent: *` / `Disallow: /`. Sie regelt das Crawlen
+der Website; die Nutzung der API regelt die für diesen Dienst veröffentlichte Lizenz (CC BY 4.0).
+Amtsblick crawlt nicht, sondern ruft genau den als Open-Data-Dienst veröffentlichten Endpunkt ab, und
+zwar zurückhaltend so:
 
 - **Höchstens ein Abruf des Gesamtbestands pro 60 Minuten.** Gehostet teilen sich alle Nutzer diesen
   Abruf. Der letzte Stand und der Zeitpunkt des letzten Versuchs liegen in `data/pegel_aktuell.json`,
