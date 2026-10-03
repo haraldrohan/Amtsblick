@@ -286,7 +286,7 @@ Wird nur vom Import-Skript abgerufen, nie im laufenden Betrieb. Die Geodaten fü
 23 Gemeindebezirke; Amtsblick ergänzt „Wien" (GKZ 90001) als Zusammenfassung mit dem Mittelpunkt
 der Inneren Stadt, damit die Stadt als Ganzes auffindbar ist.
 
-## Datenschutz
+## Datenschutz (Privacy Policy)
 
 Amtsblick speichert keine Anfragen und keine Daten von Nutzern und sendet keine Telemetrie. Im Speicher
 liegen nur die zuletzt abgerufenen Daten der Quellen, auf der Platte nur die Gemeinden und der letzte
