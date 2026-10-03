@@ -155,6 +155,7 @@ docker run --rm -p 8080:8080 -e Amtsblick__Kontakt=betrieb@example.org amtsblick
 ```
 
 Der MCP-Endpunkt ist `/mcp` (Streamable HTTP, zustandslos), der Zustand steht unter `/health`.
+Unter `/` liefert der Server eine kurze Startseite, unter `/datenschutz` die Datenschutzerklärung.
 Direkt gestartet lauscht der Server auf `http://localhost:5210`, im Container auf Port 8080.
 
 - **HTTPS** stellt der Hosting-Anbieter oder ein vorgeschalteter Reverse Proxy bereit; der Server
@@ -292,8 +293,8 @@ Amtsblick speichert keine Anfragen und keine Daten von Nutzern und sendet keine 
 liegen nur die zuletzt abgerufenen Daten der Quellen, auf der Platte nur die Gemeinden und der letzte
 Pegelstand. An die Quellen gehen nur Koordinaten (auf 0,01° gerundet) bzw. der Abruf des
 Gesamtbestands. Der gehostete Server protokolliert nur Methode, Pfad, Statuscode und Dauer, ohne
-IP-Adresse. Die vollständige Erklärung steht in [docs/datenschutz.md](docs/datenschutz.md)
-([English](docs/privacy.md)).
+IP-Adresse. Die vollständige Erklärung steht in [DATENSCHUTZ.md](DATENSCHUTZ.md), deutsch und
+englisch; der gehostete Server liefert sie unter `/datenschutz` aus.
 
 ## Aufbau
 
@@ -305,7 +306,8 @@ src/Amtsblick.Server          MCP-Host (stdio und Streamable HTTP), lage_am_ort,
 tests/                        Tests je Projekt; Fixtures sind gespeicherte Antworten der echten Dienste
 scripts/                      Import der Referenzdaten, Bau der Programmdateien und MCP Bundles
 packaging/                    Manifest für das MCP Bundle
-docs/                         Projektseite, Datenschutz, Prüfprotokoll
+docs/                         Prüfprotokoll, Stand der Auslieferung
+infra/                        Einrichtung und Beschreibung des Hostings in Azure
 data/                         importierte Referenzdaten (nicht eingecheckt)
 ```
 

@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Markdig" Version="1.4.0" />
     <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
   </ItemGroup>
 
@@ -45,6 +46,12 @@
     <None Include="..\..\LICENSE" Pack="true" PackagePath="/" />
     <None Include="..\..\assets\icon.png" Pack="true" PackagePath="/" />
     <None Include=".mcp\server.json" Pack="true" PackagePath="/.mcp/" />
+    <None Include="..\..\DATENSCHUTZ.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <!-- Die Datenschutzerklärung aus dem Repository liefert der Server unter /datenschutz aus. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\DATENSCHUTZ.md" LogicalName="DATENSCHUTZ.md" />
   </ItemGroup>
 
   <!-- Die Version steht an drei Stellen: in Directory.Build.props sowie in server.json oben und bei
@@ -52,11 +59,10 @@
   <Target Name="PruefeServerJsonVersion" BeforeTargets="BeforeBuild;GenerateNuspec">
     <PropertyGroup>
       <_ServerJson>$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)/.mcp/server.json'))</_ServerJson>
-      <_VersionsAngaben>$([System.Text.RegularExpressions.Regex]::Matches($(_ServerJson), '&quot;version&quot;\s*:').Count)</_VersionsAngaben>
-      <_VersionsTreffer>$([System.Text.RegularExpressions.Regex]::Matches($(_ServerJson), '&quot;version&quot;\s*:\s*&quot;$([System.Text.RegularExpressions.Regex]::Escape($(Version)))&quot;').Count)</_VersionsTreffer>
+      <_VersionsAngaben>$([System.Text.RegularExpressions.Regex]::Matches($(_ServerJson), '"version"\s*:').Count)</_VersionsAngaben>
+      <_VersionsTreffer>$([System.Text.RegularExpressions.Regex]::Matches($(_ServerJson), '"version"\s*:\s*"$([System.Text.RegularExpressions.Regex]::Escape($(Version)))"').Count)</_VersionsTreffer>
     </PropertyGroup>
-    <Error Condition="'$(_VersionsAngaben)' != '2' Or '$(_VersionsTreffer)' != '2'"
-           Text=".mcp/server.json: beide Versionsangaben (oben und packages[0]) müssen der Paketversion $(Version) entsprechen; gefunden: $(_VersionsTreffer) von $(_VersionsAngaben)." />
+    <Error Condition="'$(_VersionsAngaben)' != '2' Or '$(_VersionsTreffer)' != '2'" Text=".mcp/server.json: beide Versionsangaben (oben und packages[0]) müssen der Paketversion $(Version) entsprechen; gefunden: $(_VersionsTreffer) von $(_VersionsAngaben)." />
   </Target>
 
 </Project>

@@ -172,3 +172,80 @@ public sealed class HttpServerTests : IAsyncLifetime
         return dokument.RootElement.Clone();
     }
 }
+
+public sealed class SeitenTests : IAsyncLifetime
+{
+    private WebApplication _app = null!;
+    private HttpClient _client = null!;
+
+    public async Task InitializeAsync()
+    {
+        _app = ServerRegistrierung.ErzeugeHttpApp([], builder =>
+        {
+            builder.WebHost.UseTestServer();
+            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Amtsblick:AutoImport"] = "false",
+                ["Amtsblick:DatenVerzeichnis"] = Path.Combine(Path.GetTempPath(), $"amtsblick-test-{Guid.NewGuid():N}"),
+                ["AllowedHosts"] = "*",
+            });
+        });
+        await _app.StartAsync();
+        _client = _app.GetTestClient();
+    }
+
+    public async Task DisposeAsync()
+    {
+        _client.Dispose();
+        await _app.DisposeAsync();
+    }
+
+    [Fact]
+    public async Task Startseite_nennt_Pflichthinweis_Repo_Einbindung_und_Datenschutz()
+    {
+        var antwort = await _client.GetAsync("/");
+        var html = await antwort.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, antwort.StatusCode);
+        Assert.Equal("text/html", antwort.Content.Headers.ContentType?.MediaType);
+        Assert.Contains(ToolAntwort.Pflichthinweis, WebUtility.HtmlDecode(html));
+        Assert.Contains("href=\"https://github.com/haraldrohan/Amtsblick\"", html);
+        Assert.Contains("href=\"https://github.com/haraldrohan/Amtsblick#einbinden\"", html);
+        Assert.Contains("href=\"/datenschutz\"", html);
+        Assert.Contains("<code>/mcp</code>", html);
+        Assert.DoesNotContain("<script", html);
+        Assert.False(antwort.Headers.Contains("Set-Cookie"));
+    }
+
+    [Fact]
+    public async Task Datenschutz_liefert_die_Erklaerung_aus_dem_Repository_deutsch_und_englisch()
+    {
+        var antwort = await _client.GetAsync("/datenschutz");
+        var html = WebUtility.HtmlDecode(await antwort.Content.ReadAsStringAsync());
+
+        Assert.Equal(HttpStatusCode.OK, antwort.StatusCode);
+        Assert.Equal("text/html", antwort.Content.Headers.ContentType?.MediaType);
+        Assert.Contains(">Datenschutzerklärung</h1>", html);
+        Assert.Contains("<h1 id=\"privacy-policy\">Privacy policy</h1>", html);
+        Assert.Contains(ToolAntwort.Pflichthinweis, html);
+        Assert.Contains("<table>", html);
+        Assert.Contains("Austria East", html);
+        Assert.False(antwort.Headers.Contains("Set-Cookie"));
+
+        // Dieselbe Fassung wie die Datei im Repository.
+        var datei = File.ReadAllText(Path.Combine(Wurzel(), "DATENSCHUTZ.md"));
+        Assert.Contains("höchstens einmal pro Stunde der Abruf des gesamten Pegelbestands", datei);
+        Assert.Contains("höchstens einmal pro Stunde der Abruf des gesamten Pegelbestands", html);
+    }
+
+    private static string Wurzel()
+    {
+        var ordner = new DirectoryInfo(AppContext.BaseDirectory);
+        while (ordner is not null && !File.Exists(Path.Combine(ordner.FullName, "Amtsblick.sln")))
+        {
+            ordner = ordner.Parent;
+        }
+
+        return ordner?.FullName ?? throw new InvalidOperationException("Repository-Wurzel nicht gefunden.");
+    }
+}

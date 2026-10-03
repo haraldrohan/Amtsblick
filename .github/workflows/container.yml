@@ -39,6 +39,11 @@ jobs:
           test "$(grep -o '"name":"[a-z_]*"' tools.txt | sort -u | wc -l)" = 8
           rpc '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"ort_finden","arguments":{"text":"Steyr"}}}' | grep -q '40201'
 
+      - name: Startseite und Datenschutzerklärung
+        run: |
+          curl -fsS http://localhost:8080/ | grep -q "kein offizielles Angebot einer Beh"
+          curl -fsS http://localhost:8080/datenschutz | grep -q "Privacy policy"
+
       - name: Origin-Prüfung
         run: |
           test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Origin: https://boese.example' http://localhost:8080/health)" = 403

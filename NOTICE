@@ -54,4 +54,5 @@ tests/Fixtures/gemeinden-steyr.geojson ist ein Ausschnitt (drei Gemeinden) aus O
 Verwendete Bibliotheken (eigene Lizenzen, mit MIT vereinbar):
    ModelContextProtocol, ModelContextProtocol.AspNetCore (Apache-2.0)
    Microsoft.Data.Sqlite, Microsoft.Extensions.* (MIT); SQLitePCLRaw (Apache-2.0); SQLite (gemeinfrei)
+   Markdig (BSD-2-Clause), zur Darstellung der Datenschutzerklärung als Webseite
    Nur für Tests: xunit (Apache-2.0), Microsoft.NET.Test.Sdk (MIT), coverlet.collector (MIT)

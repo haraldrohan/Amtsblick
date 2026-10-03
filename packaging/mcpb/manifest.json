@@ -13,13 +13,13 @@
     "type": "git",
     "url": "https://github.com/haraldrohan/Amtsblick"
   },
-  "homepage": "https://haraldrohan.github.io/Amtsblick/",
+  "homepage": "https://github.com/haraldrohan/Amtsblick",
   "documentation": "https://github.com/haraldrohan/Amtsblick#readme",
   "support": "https://github.com/haraldrohan/Amtsblick/issues",
   "icon": "icon.png",
   "license": "MIT",
   "keywords": ["österreich", "wetter", "pegel", "hochwasser", "gemeinde", "open data"],
-  "privacy_policies": ["https://haraldrohan.github.io/Amtsblick/datenschutz.html"],
+  "privacy_policies": ["https://github.com/haraldrohan/Amtsblick/blob/main/DATENSCHUTZ.md"],
   "server": {
     "type": "binary",
     "entry_point": "server/@BINARY@",

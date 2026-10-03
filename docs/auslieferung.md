@@ -1,6 +1,3 @@
----
-title: Auslieferung
----
 
 # Auslieferung bis zum Nutzer
 
@@ -8,7 +5,7 @@ Stand: 3. Oktober 2026. Dieses Dokument hält fest, was für die Auslieferung vo
 noch eine Entscheidung braucht und wie die Erstveröffentlichung abläuft.
 
 **Veröffentlicht oder deployt ist noch nichts.** Paket, Bundles und Container sind gebaut und
-geprüft; NuGet, MCP Registry, Hosting und GitHub Pages warten auf die Freigabe des Projektinhabers.
+geprüft; NuGet, MCP Registry und Hosting warten auf die Freigabe des Projektinhabers.
 
 ## Stand je Schritt
 
@@ -16,16 +13,20 @@ geprüft; NuGet, MCP Registry, Hosting und GitHub Pages warten auf die Freigabe 
 |---|---|---|
 | 1 Tool-Metadaten | fertig | Tests am HTTP-Server: Titel, `readOnlyHint`, `destructiveHint`, `openWorldHint`, Server-Info, Quellenvermerk in der Zusammenfassung |
 | 2 Gehosteter Server | Server und Container fertig; Azure vorbereitet, nichts angelegt | Tests (Rate-Limit, Origin, Health); Workflow „Container prüfen" baut das Image und fragt den laufenden Container ab |
-| 3 Datenschutz, Projektseite, Impressum | Entwürfe in `docs/`; GitHub Pages noch nicht eingeschaltet | – |
+| 3 Datenschutz und Projektseite | `DATENSCHUTZ.md` (deutsch und englisch) im Repository; der Server liefert sie unter `/datenschutz` und eine Startseite unter `/`; Name und Kontakt des Betreibers offen | Tests am HTTP-Server |
 | 4 NuGet-Paket | fertig, lokal gepackt | `dnx Amtsblick@0.1.0-beta --yes --add-source <Ordner>` startet den Server, acht Tools |
 | 5 Programmdateien und MCP Bundle | gebaut für vier Plattformen | Windows-Datei über stdio abgefragt; Installation in Claude Desktop per Doppelklick noch nicht geprüft |
-| 6 Einbindung dokumentiert | README und Projektseite | – |
+| 6 Einbindung dokumentiert | README | – |
 | 7 Release-Automatik | Workflow `release.yml` samt Deployment nach Azure | noch kein Lauf (läuft nur bei einem Tag) |
 | 8 Erstveröffentlichung | offen, gemeinsam mit dem Projektinhaber | – |
 | 9 Connectors-Verzeichnis | Checkliste und Texte unten | – |
 
 ## Abweichungen vom Zusatzauftrag
 
+- **GitHub Pages entfällt** (Entscheidung des Projektinhabers vom 3. Oktober 2026): Die README ist
+  die Projektseite, die Datenschutzerklärung liegt als `DATENSCHUTZ.md` im Repository, und der
+  gehostete Server liefert Startseite und Erklärung selbst aus. Ein Impressum entfällt damit als
+  eigene Seite; ob eines nötig ist, klärt der Projektinhaber.
 - **Registry-Beschreibung:** Das Schema begrenzt `description` auf 100 Zeichen. Der Pflichthinweis hat
   allein 91. In `server.json` steht deshalb die Kurzform „Privates Projekt, kein offizielles
   Behördenangebot"; der volle Wortlaut steht in der Paket-README, die der Eintrag verlinkt.
@@ -87,11 +88,11 @@ Erste öffentliche Version ist `0.1.0-beta`, weil NuGet-Versionen unveränderlic
    dort einmalig auf „öffentlich" stellen, damit Azure es laden kann. Für die eigene Domain einen
    DNS-Eintrag setzen und sie mit `az containerapp hostname add` und `bind` samt verwaltetem
    Zertifikat anbinden.
-2. Offene Angaben in Datenschutzerklärung und Impressum eintragen, GitHub Pages einschalten
-   (Quelle: Ordner `docs/` im Zweig `main`).
+2. Name und Kontaktadresse des Betreibers in `DATENSCHUTZ.md` eintragen.
 3. Gehosteten Server deployen und in claude.ai als eigenen Connector per URL prüfen: acht Tools,
    die Beispielfragen zu Steyr.
-4. Adresse des Servers als `remotes` in `.mcp/server.json` und in README und Projektseite eintragen.
+4. Adresse des Servers als `remotes` in `.mcp/server.json` und in der README eintragen; im
+   Bundle-Manifest die Datenschutz-Adresse auf `<Adresse>/datenschutz` umstellen.
 5. Testlauf: `dotnet pack`, `dnx` gegen den lokalen Ordner, `mcp-publisher validate`.
 6. NuGet: auf nuget.org eine Regel für Trusted Publishing anlegen (Repository `haraldrohan/Amtsblick`,
    Workflow `release.yml`, Umgebung `produktion`) und den Benutzernamen als Secret `NUGET_USER`
@@ -117,8 +118,8 @@ gelesen am 3. Oktober 2026. Die Einreichung selbst macht der Projektinhaber übe
 | Authentifizierung: OAuth 2.0 oder keine bei öffentlichen Daten | erfüllt: keine Anmeldung, nur öffentliche Daten |
 | Jedes Tool mit `title` und `readOnlyHint` bzw. `destructiveHint` | erfüllt, durch Test abgesichert |
 | In Claude als eigener Connector getestet, jedes Tool aufgerufen | offen: nach dem Deployment |
-| Dokumentations-URL | vorbereitet: README bzw. Projektseite |
-| URL der Datenschutzerklärung | vorbereitet: `docs/datenschutz.md`, `docs/privacy.md`; Pages einschalten, offene Angaben ergänzen |
+| Dokumentations-URL | vorbereitet: README im Repository |
+| URL der Datenschutzerklärung | vorbereitet: `<Adresse des Servers>/datenschutz`; Name und Kontakt des Betreibers ergänzen |
 | Support-Kontakt | offen: Kontaktadresse oder GitHub Issues |
 | Icon | vorhanden: `assets/icon-512.png` |
 | Testzugang für Prüfer | entfällt: keine Anmeldung; Testanleitung unten |

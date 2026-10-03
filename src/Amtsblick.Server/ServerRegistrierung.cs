@@ -72,7 +72,8 @@ public static class ServerRegistrierung
         app.UseAmtsblickHttpSchutz();
         app.MapMcp("/mcp").RequireRateLimiting(HttpSchutz.Richtlinie);
         app.MapGet("/health", Gesundheit.Antwort);
-        app.MapGet("/", () => $"Amtsblick {UserAgent.Version} – MCP-Endpunkt (Streamable HTTP): /mcp\n{ToolAntwort.Pflichthinweis}\n");
+        app.MapGet("/", Seiten.Start);
+        app.MapGet("/datenschutz", Seiten.Datenschutz);
         return app;
     }
 }
