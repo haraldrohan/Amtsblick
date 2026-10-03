@@ -93,7 +93,9 @@ Erste öffentliche Version ist `0.1.0-beta`, weil NuGet-Versionen unveränderlic
    die Beispielfragen zu Steyr.
 4. Adresse des Servers als `remotes` in `.mcp/server.json` und in README und Projektseite eintragen.
 5. Testlauf: `dotnet pack`, `dnx` gegen den lokalen Ordner, `mcp-publisher validate`.
-6. NuGet-Konto: API-Schlüssel als Secret `NUGET_API_KEY` im Repository hinterlegen; Adresse des
+6. NuGet: auf nuget.org eine Regel für Trusted Publishing anlegen (Repository `haraldrohan/Amtsblick`,
+   Workflow `release.yml`, Umgebung `produktion`) und den Benutzernamen als Secret `NUGET_USER`
+   hinterlegen. Ein API-Schlüssel wird nicht gespeichert. Adresse des
    Servers als Variable `SERVER_URL`.
 7. Tag `v0.1.0-beta` setzen. Der Workflow veröffentlicht Release, Paket, Image und Registry-Eintrag.
 8. Nachprüfung: Paket auf NuGet.org als MCP-Server sichtbar, Eintrag in der Registry abrufbar,

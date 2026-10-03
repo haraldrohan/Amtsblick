@@ -1,12 +1,21 @@
-name: Release
+      # Kein API-Schlüssel im Repository: NuGet/login tauscht ein kurzlebiges GitHub-Token gegen einen
+      # Schlüssel, der eine Stunde gilt. Die passende Regel ist auf nuget.org hinterlegt.
+      - name: Bei nuget.org anmelden (Trusted Publishing)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+      - name: Paket veröffentlichen
+        run: dotnet nuget push nuget/*.nupkg --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicatename: Release
 
 # Ein Tag v<Version> veröffentlicht alles: GitHub-Release mit Programmdateien und MCP Bundles,
 # NuGet-Paket, Container-Image, Deployment und Eintrag in der MCP Registry.
 # Der Tag wird nur mit Freigabe des Projektinhabers gesetzt; ohne Tag läuft hier nichts.
 #
 # Einmalig einzurichten:
-#   Secret   NUGET_API_KEY   API-Schlüssel von NuGet.org mit Push-Recht für das Paket "Amtsblick"
-#   Variable SERVER_URL      Adresse des gehosteten Servers ohne Pfad, z. B. https://amtsblick.example.at
+#   nuget.org  Trusted Publishing: Regel für dieses Repository, Workflow release.yml, Umgebung produktion
+#   Secret     NUGET_USER   Benutzername auf nuget.org (kein Kennwort, kein API-Schlüssel)
+#   Variable   SERVER_URL   Adresse des gehosteten Servers ohne Pfad, z. B. https://amtsblick.example.at
 on:
   push:
     tags: ["v*"]
@@ -50,7 +59,7 @@ jobs:
         with:
           dotnet-version: 10.0.x
       - run: dotnet pack src/Amtsblick.Server -c Release -o artifacts/nuget
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: nuget
           path: artifacts/nuget/*.nupkg
@@ -65,11 +74,11 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: lts/*
       - run: bash scripts/baue-auslieferung.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: release
           path: artifacts/release/*
@@ -111,7 +120,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v7
-      - uses: azure/login@v2
+      - uses: azure/login@v3
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
@@ -139,7 +148,7 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: dateien
           merge-multiple: true
@@ -159,11 +168,14 @@ jobs:
     name: NuGet.org
     needs: [pruefen, paket, bundles, container]
     runs-on: ubuntu-latest
+    environment: produktion
+    permissions:
+      id-token: write # für das kurzlebige Token (Trusted Publishing)
     steps:
       - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: nuget
           path: nuget
