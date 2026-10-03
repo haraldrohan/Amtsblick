@@ -39,13 +39,19 @@ public sealed class WetterAuskunft(OrtResolver orte, WetterDienst dienst, Statis
 
     public IEnumerable<Quellenvermerk> Quellen() => [Vermerk(Ressource.Prognose, null), Vermerk(Ressource.Nowcast, null)];
 
+    /// <summary>Wortlaut laut Nutzungsbedingungen des GeoSphere Austria Data Hub.</summary>
+    public const string Namensnennung = "Datenquelle: GeoSphere Austria - https://data.hub.geosphere.at";
+
     public static Quellenvermerk Vermerk(Ressource ressource, DateTimeOffset? lauf) => new(
         Quelle: "GeoSphere Austria",
-        Lizenz: "CC BY 4.0",
-        Vermerk: "Datenquelle: GeoSphere Austria",
+        Lizenz: Quellenvermerk.CcBy40,
+        LizenzLink: Quellenvermerk.CcBy40Link,
+        Vermerk: Namensnennung,
         Link: "https://data.hub.geosphere.at",
         Datensatz: ressource.Id,
-        Stand: Zeit.Iso(lauf));
+        Doi: ressource.Doi,
+        Stand: Zeit.Iso(lauf),
+        Bearbeitung: "Einheiten umgerechnet (kg/m² in mm, m/s in km/h, s in min), Wind aus u/v berechnet, Werte zu Zeitblöcken zusammengefasst");
 
     /// <summary>Tool <c>wetter_prognose</c>.</summary>
     public async Task<Teilantwort> PrognoseAsync(string ort, int stunden = 48, CancellationToken ct = default)

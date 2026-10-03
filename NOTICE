@@ -4,35 +4,54 @@ Copyright (c) 2026 Amtsblick-Mitwirkende
 Der Quellcode dieses Projekts steht unter der MIT-Lizenz (siehe LICENSE).
 
 Die Daten, die Amtsblick abruft, importiert oder weitergibt, gehören nicht zum Projekt. Sie bleiben
-unter der Lizenz ihrer jeweiligen Quelle. Wer Antworten von Amtsblick weitergibt oder veröffentlicht,
-muss den Vermerk der Quelle wörtlich übernehmen; jede Tool-Antwort enthält ihn im Feld "quellen".
+unter der Lizenz ihrer jeweiligen Quelle, derzeit durchwegs Creative Commons Namensnennung 4.0
+International (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/deed.de).
+
+Wer Antworten von Amtsblick weitergibt oder veröffentlicht, muss nach CC BY 4.0 den Vermerk der Quelle
+wörtlich, die Lizenz mit Link auf ihren Text und die Angabe zur Bearbeitung übernehmen. Jede
+Tool-Antwort enthält diese Angaben im Feld "quellen".
+
+Die Datengeber sind an Amtsblick nicht beteiligt und billigen weder das Projekt noch die Aufbereitung
+ihrer Daten.
 
 1. Statistik Austria – Gliederung Österreichs in Gemeinden und Politische Bezirke
-   Datensätze: OGDEXT_GEM_1, OGDEXT_POLBEZ_1
-   Lizenz:     Creative Commons Namensnennung 4.0 International (CC BY 4.0)
-   Vermerk:    Datenquelle: Statistik Austria — data.statistik.gv.at
-   Link:       https://data.statistik.gv.at
-   Verwendung: Gemeindeverzeichnis (data/gemeinden.sqlite, per Import-Skript erzeugt, nicht im Repository).
-               Amtsblick ergänzt daraus berechnete Mittelpunkte und den Eintrag "Wien" (GKZ 90001) als
-               Zusammenfassung der 23 Wiener Gemeindebezirke.
+   Datensätze:  OGDEXT_GEM_1, OGDEXT_POLBEZ_1
+   Lizenz:      CC BY 4.0
+   Vermerk:     Datenquelle: Statistik Austria — data.statistik.gv.at
+   Link:        https://data.statistik.gv.at
+   Grundlage:   https://data.statistik.gv.at/web/?page=terms
+   Bearbeitung: Gemeindemittelpunkte aus den Grenzen berechnet, Schreibweise der Bezirksnamen
+                vereinheitlicht, "Wien" (GKZ 90001) als Zusammenfassung der 23 Wiener
+                Gemeindebezirke ergänzt.
+   Verwendung:  Gemeindeverzeichnis (data/gemeinden.sqlite, per Import-Skript erzeugt, nicht im Repository).
 
-2. GeoSphere Austria – Dataset API
-   Datensätze: nwp-v2-1h-1km, nowcast-v1-15min-1km
-   Lizenz:     Creative Commons Namensnennung 4.0 International (CC BY 4.0)
-   Vermerk:    Datenquelle: GeoSphere Austria
-   Link:       https://data.hub.geosphere.at
-   Verwendung: Wetterprognose und Nowcast; Amtsblick rechnet Einheiten um und fasst Stundenwerte zusammen.
+2. GeoSphere Austria – Dataset API des GeoSphere Austria Data Hub
+   Datensätze:  nwp-v2-1h-1km        (DOI https://doi.org/10.60669/rv80-9d61)
+                nowcast-v1-15min-1km (DOI https://doi.org/10.60669/ahad-4y43)
+   Lizenz:      CC BY 4.0 (je Datensatz in den Metadaten angegeben)
+   Vermerk:     Datenquelle: GeoSphere Austria - https://data.hub.geosphere.at
+   Link:        https://data.hub.geosphere.at
+   Grundlage:   https://data.hub.geosphere.at/legal
+   Bearbeitung: Einheiten umgerechnet (kg/m² in mm, m/s in km/h, s in min), Windgeschwindigkeit und
+                -richtung aus den Komponenten u/v berechnet, Stundenwerte zu Zeitblöcken und
+                Tageswerten zusammengefasst.
 
-3. eHYD – Hydrographischer Dienst Österreichs
-   Datensatz:  i000501:pegel_aktuell (Aktuelle Pegelstände Österreich)
-   Lizenz:     Creative Commons Namensnennung 4.0 International (CC BY 4.0)
-   Vermerk:    Datenquelle: ehyd.gv.at   (mit Link auf https://ehyd.gv.at)
-   Link:       https://ehyd.gv.at
-   Verwendung: aktuelle Pegelwerte; Amtsblick ordnet jeder Messstelle eine Gemeinde zu und übersetzt den
-               Statuscode der Quelle in Worte.
+3. eHYD – Hydrographischer Dienst Österreich
+   Datensatz:   i000501:pegel_aktuell (Aktuelle Pegelstände Österreich)
+   Rechte:      laut Metadaten beim BMLUK und den Bundesländern
+   Lizenz:      CC BY 4.0, "sowohl für private als auch kommerzielle Zwecke frei sowie entgeltfrei nutzbar"
+   Vermerk:     Datenquelle: ehyd.gv.at   ("ehyd.gv.at" als Link auf https://ehyd.gv.at)
+   Link:        https://ehyd.gv.at
+   Grundlage:   https://geoportal.inspire.gv.at/metadatensuche/inspire/api/records/6a67faa7-3ad7-4faf-91e9-17a518d10685
+   Bearbeitung: Statuscode (gesamtcode) in Lage, Tendenz und Aktualität übersetzt, jeder Messstelle
+                Gemeinde und Entfernung zugeordnet, Auswahl nach Ort, Gewässer oder Stufe.
 
 Testdaten: Die Dateien unter tests/Fixtures und tests/*/Fixtures sind gespeicherte Antworten bzw.
-Ausschnitte der oben genannten Dienste (abgerufen am 2. Oktober 2026) und stehen ebenfalls unter
-CC BY 4.0 der jeweiligen Quelle, nicht unter der MIT-Lizenz.
+Ausschnitte der oben genannten Dienste (abgerufen am 2. Oktober 2026). Sie stehen unter CC BY 4.0 der
+jeweiligen Quelle mit dem dort genannten Vermerk, nicht unter der MIT-Lizenz. Bearbeitung:
+tests/Fixtures/gemeinden-steyr.geojson ist ein Ausschnitt (drei Gemeinden) aus OGDEXT_GEM_1.
 
-Lizenztext CC BY 4.0: https://creativecommons.org/licenses/by/4.0/legalcode.de
+Verwendete Bibliotheken (eigene Lizenzen, mit MIT vereinbar):
+   ModelContextProtocol, ModelContextProtocol.AspNetCore (Apache-2.0)
+   Microsoft.Data.Sqlite, Microsoft.Extensions.* (MIT); SQLitePCLRaw (Apache-2.0); SQLite (gemeinfrei)
+   Nur für Tests: xunit (Apache-2.0), Microsoft.NET.Test.Sdk (MIT), coverlet.collector (MIT)

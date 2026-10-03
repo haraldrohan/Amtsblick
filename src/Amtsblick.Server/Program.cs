@@ -1,6 +1,7 @@
 using Amtsblick.Core;
 using Amtsblick.Core.Http;
 using Amtsblick.Core.Ort;
+using Amtsblick.Core.Quellen;
 using Amtsblick.Modules.Wasser;
 using Amtsblick.Modules.Wetter;
 using Amtsblick.Server;
@@ -62,7 +63,7 @@ static async Task<int> ImportiereAsync()
     try
     {
         await new GemeindeImport(http).ImportiereAsync(ziel, Console.Error.WriteLine);
-        Console.Error.WriteLine("Datenquelle: Statistik Austria — data.statistik.gv.at (CC BY 4.0)");
+        Console.Error.WriteLine($"{StatistikAustriaQuelle.Namensnennung} (Lizenz: {Quellenvermerk.CcBy40}, {Quellenvermerk.CcBy40Link})");
         return 0;
     }
     catch (Exception fehler) when (fehler is HttpRequestException or TaskCanceledException or FormatException or System.Text.Json.JsonException)

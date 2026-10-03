@@ -59,6 +59,8 @@ public class PegelAuskunftTests
         Assert.Equal("Datenquelle: ehyd.gv.at", quelle.GetProperty("vermerk").GetString());
         Assert.Equal("https://ehyd.gv.at", quelle.GetProperty("link").GetString());
         Assert.Equal("CC BY 4.0", quelle.GetProperty("lizenz").GetString());
+        Assert.Equal("https://creativecommons.org/licenses/by/4.0/deed.de", quelle.GetProperty("lizenz_link").GetString());
+        Assert.Contains("Statuscode", quelle.GetProperty("bearbeitung").GetString());
         Assert.Equal("2026-10-02T21:07+02:00", quelle.GetProperty("stand").GetString());
         Assert.Equal("Keine amtliche Warnung. Maßgeblich sind die Warndienste des Landes.", Hinweise(antwort)[^1]);
         Assert.Contains(Hinweise(antwort), h => h.Contains("bis zu einer Stunde"));

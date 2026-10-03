@@ -47,9 +47,16 @@ public sealed class KernTools(
         return ToolAntwort.Erzeuge(zusammenfassung, new { Treffer = zeilen }, [statistik.Vermerk], []);
     }
 
+    /// <summary>Weitergabepflichten aus CC BY 4.0 und Abgrenzung gegenüber den Datengebern.</summary>
+    public const string Lizenzhinweis =
+        "Die Daten bleiben unter der Lizenz der jeweiligen Quelle. Bei Weitergabe sind Vermerk (wörtlich), "
+        + "Lizenz mit Link und die Angabe zur Bearbeitung zu übernehmen. Die Datengeber sind an Amtsblick nicht "
+        + "beteiligt und billigen weder das Projekt noch die Aufbereitung.";
+
     [McpServerTool(Name = "quellen", Title = "Quellen und Lizenzen", ReadOnly = true, Idempotent = true)]
     [Description("""
-        Listet alle Datenquellen dieses Servers mit Lizenz, vorgeschriebenem Quellenvermerk, Link und Stand
+        Listet alle Datenquellen dieses Servers mit Lizenz und Link zum Lizenztext, vorgeschriebenem
+        Quellenvermerk, Link, Datensatz, DOI, Stand und der Angabe, wie Amtsblick die Daten aufbereitet,
         sowie das verbleibende Anfragekontingent je Quelle.
         Beispielfragen: "Woher stammen die Daten?" · "Unter welcher Lizenz stehen die Pegeldaten?" ·
         "Wie viele Wetterabfragen sind in dieser Stunde noch möglich?"
@@ -67,11 +74,12 @@ public sealed class KernTools(
             Stand = Zeit.Iso(k.Stand),
         }).ToList();
 
+        var namen = quellen.Select(q => q.Quelle).Distinct().ToList();
         return ToolAntwort.Erzeuge(
-            $"{quellen.Count} Datenquellen: {string.Join(", ", quellen.Select(q => q.Quelle).Distinct())}.",
+            $"{quellen.Count} Datensätze von {namen.Count} Quellen: {string.Join(", ", namen)}.",
             new { Kontingent = kontingente },
             quellen,
-            ["Die Daten bleiben unter der Lizenz der jeweiligen Quelle; der Vermerk ist bei Weitergabe wörtlich zu übernehmen.",
+            [Lizenzhinweis,
              "Kontingent wird erst nach der ersten Anfrage an eine Quelle bekannt."]);
     }
 }

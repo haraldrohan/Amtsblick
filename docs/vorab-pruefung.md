@@ -9,8 +9,11 @@ Stand: 2. Oktober 2026. Geprüft vor dem ersten Einbau der jeweiligen Quelle.
 | NuGet | kein Paket `Amtsblick`, 0 Suchtreffer |
 | GitHub | 0 Repositories, kein Benutzer und keine Organisation dieses Namens |
 | `amtsblick.at` | nicht registriert (Whois nic.at: „nothing found") |
+| Österreichisches Patentamt (Markenregister) | kein Treffer (geprüft vom Projektinhaber am 3. Oktober 2026) |
+| EUIPO (Unionsmarken) | nicht geprüft |
 
-Keine Kollision.
+Keine Kollision. Weil „Amt" nach Behörde klingt, stellt der Haftungshinweis in der README klar, dass
+Amtsblick kein amtlicher Dienst ist; behördliche Logos oder Wappen werden nicht verwendet.
 
 ## MCP C#-SDK
 
@@ -93,3 +96,35 @@ einmal `items`; dazu ein Abnahmelauf des Servers mit je einem Abruf):
 - Attribute: `g_id` (GKZ bzw. Bezirkskennziffer) und `g_name`. Eine eigene Gemeindeliste ist nicht
   nötig: Bundesland ergibt sich aus der ersten Ziffer der GKZ, der Bezirk aus den ersten drei.
 - 2114 Einträge; Wien ist in 23 Gemeindebezirke geteilt (GKZ 90101 bis 92301).
+
+## Lizenzen und Namensnennung
+
+Geprüft am 3. Oktober 2026 bei den Quellen selbst.
+
+| Quelle | Lizenz | Verlangter Vermerk | Fundstelle |
+|---|---|---|---|
+| Statistik Austria | CC BY 4.0 | „Datenquelle: Statistik Austria — data.statistik.gv.at" | [Nutzungsbedingungen](https://data.statistik.gv.at/web/?page=terms) |
+| GeoSphere Austria | CC BY 4.0 (Datensatzseiten von `nwp-v2-1h-1km` und `nowcast-v1-15min-1km`) | „Datenquelle: GeoSphere Austria - https://data.hub.geosphere.at" | [Nutzungsbedingungen](https://data.hub.geosphere.at/legal) |
+| eHYD | CC BY 4.0, „sowohl für private als auch kommerzielle Zwecke frei sowie entgeltfrei nutzbar" | „Datenquelle: ehyd.gv.at", „ehyd.gv.at" als Link auf https://ehyd.gv.at | [INSPIRE-Metadaten](https://geoportal.inspire.gv.at/metadatensuche/inspire/api/records/6a67faa7-3ad7-4faf-91e9-17a518d10685) |
+
+Befunde und Folgen:
+
+- **GeoSphere:** Der Auftrag nannte die Kurzform „Datenquelle: GeoSphere Austria". Die
+  Nutzungsbedingungen verlangen den Wortlaut mit Adresse; Amtsblick verwendet seit 3. Oktober 2026
+  diesen. Die API selbst liefert keine Lizenzangabe; die Lizenz steht auf den Datensatzseiten, die
+  auch je eine DOI nennen. Die DOIs sind in den Antworten enthalten.
+- **CC BY 4.0, Abschnitt 3(a)(1):** Verlangt sind Namensnennung, Hinweis auf die Lizenz mit Link auf
+  ihren Text und die Angabe, ob das Material verändert wurde. Jeder Quellenvermerk in den Antworten
+  enthält deshalb `lizenz_link` und `bearbeitung`.
+- **Keine Billigung:** CC BY 4.0 erlaubt nicht, den Eindruck zu erwecken, die Datengeber unterstützten
+  die Weiterverwendung. README, NOTICE und das Tool `quellen` stellen das klar.
+- **eHYD, Rechteinhaber:** Laut Metadaten liegen die Rechte beim BMLUK und den Bundesländern. Im
+  Bestand kommen auch Messstellen von Unternehmen und Bundesstellen vor (TIWAG, Verbund Hydro Power,
+  Salzburg AG, E-Werk Reutte, viaDonau). Da der Dienst als Ganzes unter CC BY 4.0 veröffentlicht ist,
+  wird davon ausgegangen, dass die Lizenz auch diese Werte umfasst; eine Bestätigung ist in der
+  Anfrage an das Ministerium erbeten.
+- **Haftung:** Alle drei Quellen schließen die Haftung für Richtigkeit, Vollständigkeit und
+  Verfügbarkeit aus. Der Haftungshinweis der README folgt dem.
+- **GeoSphere, Nutzungsverbote:** Die Nutzungsbedingungen untersagen die Verwendung für rechtswidrige
+  und diskriminierende Zwecke; für Amtsblick ohne Folgen.
+- **robots.txt von gis.lfrz.gv.at:** betrifft den technischen Zugang, nicht die Nutzungsrechte (siehe oben).

@@ -13,6 +13,9 @@ demselben Muster.
 > Unwetter- noch Hochwasserwarnungen. Maßgeblich sind die Warndienste von GeoSphere Austria und der
 > Länder. Die Software wird ohne Gewähr bereitgestellt (siehe [LICENSE](LICENSE)); wer sie betreibt,
 > ist für die Einhaltung der Nutzungsbedingungen der Quellen selbst verantwortlich.
+> Amtsblick ist ein privates Projekt. Statistik Austria, GeoSphere Austria, das BMLUK und die
+> Hydrographischen Dienste der Länder sind daran nicht beteiligt und billigen weder das Projekt noch
+> die Aufbereitung ihrer Daten.
 
 ## Tools
 
@@ -32,7 +35,9 @@ Zusatz `"Name, Bundesland"`, eine fünfstellige GKZ oder eine Koordinate `"Breit
 Name mehrdeutig, kommt statt Daten die Liste der Kandidaten zurück.
 
 Jede Antwort ist ein kompaktes JSON-Objekt. Es beginnt mit einer Zeile `zusammenfassung` und endet
-mit `quellen` (Quelle, Lizenz, vorgeschriebener Vermerk, Link, Datensatz, Stand) und `hinweise`.
+mit `quellen` und `hinweise`. Jeder Eintrag in `quellen` enthält Quelle, Lizenz mit Link zum
+Lizenztext, den vorgeschriebenen Vermerk, Link, Datensatz, gegebenenfalls DOI, Stand und eine Angabe,
+wie Amtsblick die Daten aufbereitet hat.
 
 ## Schnellstart
 
@@ -141,17 +146,29 @@ eHYD ohne Neustart.
 
 ## Quellen und Lizenzvermerke
 
-Eingebunden sind ausschließlich die folgenden freigegebenen Quellen. Die Daten bleiben unter der
-Lizenz der Quelle (siehe [NOTICE](NOTICE)); der Code steht unter MIT.
+Eingebunden sind ausschließlich die folgenden freigegebenen Quellen. Alle stehen unter
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.de) und sind damit auch kommerziell frei
+nutzbar, sofern die Namensnennung erfolgt. Die Daten bleiben unter der Lizenz der Quelle (siehe
+[NOTICE](NOTICE)); der Code steht unter MIT.
 
-| Quelle | Datensatz | Lizenz | Vermerk (wörtlich zu übernehmen) |
+| Quelle | Datensatz | Vermerk (wörtlich zu übernehmen) | Grundlage |
 |---|---|---|---|
-| [Statistik Austria](https://data.statistik.gv.at) | `OGDEXT_GEM_1`, `OGDEXT_POLBEZ_1` | CC BY 4.0 | Datenquelle: Statistik Austria — data.statistik.gv.at |
-| [GeoSphere Austria](https://data.hub.geosphere.at) | `nwp-v2-1h-1km`, `nowcast-v1-15min-1km` | CC BY 4.0 | Datenquelle: GeoSphere Austria |
-| [eHYD](https://ehyd.gv.at) | `i000501:pegel_aktuell` | CC BY 4.0 | Datenquelle: [ehyd.gv.at](https://ehyd.gv.at) |
+| [Statistik Austria](https://data.statistik.gv.at) | `OGDEXT_GEM_1`, `OGDEXT_POLBEZ_1` | Datenquelle: Statistik Austria — data.statistik.gv.at | [Nutzungsbedingungen](https://data.statistik.gv.at/web/?page=terms) |
+| [GeoSphere Austria](https://data.hub.geosphere.at) | `nwp-v2-1h-1km` ([DOI](https://doi.org/10.60669/rv80-9d61)), `nowcast-v1-15min-1km` ([DOI](https://doi.org/10.60669/ahad-4y43)) | Datenquelle: GeoSphere Austria - https://data.hub.geosphere.at | [Nutzungsbedingungen](https://data.hub.geosphere.at/legal), Lizenz je Datensatz |
+| [eHYD](https://ehyd.gv.at) (Rechteinhaber: BMLUK und Bundesländer) | `i000501:pegel_aktuell` | Datenquelle: [ehyd.gv.at](https://ehyd.gv.at) | [INSPIRE-Metadaten](https://geoportal.inspire.gv.at/metadatensuche/inspire/api/records/6a67faa7-3ad7-4faf-91e9-17a518d10685) |
 
-Dazu trägt jede Wetter-Antwort den Hinweis „Keine amtliche Unwetterwarnung." und jede Pegel-Antwort
-„Keine amtliche Warnung. Maßgeblich sind die Warndienste des Landes."
+Die Pflichten aus CC BY 4.0 erfüllt jede Antwort im Feld `quellen`: Namensnennung im verlangten
+Wortlaut, Lizenz mit Link zum Lizenztext, Link zur Quelle und die Angabe, was Amtsblick verändert hat:
+
+- Statistik Austria: Gemeindemittelpunkte aus den Grenzen berechnet, Schreibweise der Bezirksnamen
+  vereinheitlicht, Wien als Ganzes ergänzt.
+- GeoSphere Austria: Einheiten umgerechnet, Wind aus u/v berechnet, Werte zu Zeitblöcken zusammengefasst.
+- eHYD: Statuscode in Lage, Tendenz und Aktualität übersetzt, Gemeinde und Entfernung ergänzt,
+  Auswahl nach Ort, Gewässer oder Stufe.
+
+Wer Antworten weitergibt oder veröffentlicht, übernimmt diese Angaben. Dazu trägt jede Wetter-Antwort
+den Hinweis „Keine amtliche Unwetterwarnung." und jede Pegel-Antwort „Keine amtliche Warnung.
+Maßgeblich sind die Warndienste des Landes."
 
 ## Limits und Abrufmuster
 

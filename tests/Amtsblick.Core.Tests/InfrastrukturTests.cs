@@ -210,7 +210,7 @@ public class ToolAntwortTests
     [Fact]
     public void Antwort_beginnt_mit_der_Zusammenfassung_und_endet_mit_Quellen_und_Hinweisen()
     {
-        var quelle = new Quellenvermerk("Quelle X", "CC BY 4.0", "Datenquelle: X", "https://example.org", "ds-1", "2026-10-02");
+        var quelle = new Quellenvermerk("Quelle X", "CC BY 4.0", "https://example.org/lizenz", "Datenquelle: X", "https://example.org", "ds-1", Stand: "2026-10-02", Bearbeitung: "umgerechnet");
 
         var json = ToolAntwort.Erzeuge("Kurz gesagt: ärgerlich.", new { TempMax = 21.5, Leer = (string?)null }, [quelle], ["Hinweis A", null, ""]);
 
@@ -224,6 +224,33 @@ public class ToolAntwortTests
         Assert.Equal("CC BY 4.0", gelesen.GetProperty("lizenz").GetString());
         Assert.Equal("https://example.org", gelesen.GetProperty("link").GetString());
         Assert.Equal("2026-10-02", gelesen.GetProperty("stand").GetString());
+        Assert.Equal("https://example.org/lizenz", gelesen.GetProperty("lizenz_link").GetString());
+        Assert.Equal("umgerechnet", gelesen.GetProperty("bearbeitung").GetString());
+        Assert.False(gelesen.TryGetProperty("doi", out _));
         Assert.Equal(1, dokument.RootElement.GetProperty("hinweise").GetArrayLength());
+    }
+}
+
+public class QuellenToolTests
+{
+    [Fact]
+    public void Quellen_nennt_Vermerk_Lizenzlink_Bearbeitung_und_die_Abgrenzung_zu_den_Datengebern()
+    {
+        var verzeichnis = Testgemeinden.Verzeichnis();
+        var statistik = new StatistikAustriaQuelle(verzeichnis);
+        var tools = new KernTools(
+            new Amtsblick.Core.Ort.OrtResolver(verzeichnis), statistik, [statistik],
+            new KontingentRegister(new FakeTimeProvider()));
+
+        using var dokument = JsonDocument.Parse(tools.Quellen());
+
+        var quelle = Assert.Single(dokument.RootElement.GetProperty("quellen").EnumerateArray());
+        Assert.Equal("Datenquelle: Statistik Austria — data.statistik.gv.at", quelle.GetProperty("vermerk").GetString());
+        Assert.Equal(Quellenvermerk.CcBy40Link, quelle.GetProperty("lizenz_link").GetString());
+        Assert.Equal("2026-01-01", quelle.GetProperty("stand").GetString());
+        Assert.Contains("Wien", quelle.GetProperty("bearbeitung").GetString());
+        Assert.Contains(
+            dokument.RootElement.GetProperty("hinweise").EnumerateArray(),
+            h => h.GetString()!.Contains("billigen weder"));
     }
 }

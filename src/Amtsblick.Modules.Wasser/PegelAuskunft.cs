@@ -15,13 +15,18 @@ public sealed class PegelAuskunft(PegelDienst dienst, OrtResolver orte, Statisti
 
     public IEnumerable<Quellenvermerk> Quellen() => [Vermerk(null)];
 
+    /// <summary>Wortlaut laut Metadaten des Dienstes; "ehyd.gv.at" ist als Link auf https://ehyd.gv.at zu setzen.</summary>
+    public const string Namensnennung = "Datenquelle: ehyd.gv.at";
+
     public static Quellenvermerk Vermerk(DateTimeOffset? abgerufen) => new(
-        Quelle: "ehyd.gv.at",
-        Lizenz: "CC BY 4.0",
-        Vermerk: "Datenquelle: ehyd.gv.at",
+        Quelle: "ehyd.gv.at – Hydrographischer Dienst Österreich (BMLUK und Bundesländer)",
+        Lizenz: Quellenvermerk.CcBy40,
+        LizenzLink: Quellenvermerk.CcBy40Link,
+        Vermerk: Namensnennung,
         Link: "https://ehyd.gv.at",
         Datensatz: EhydClient.Layer,
-        Stand: Zeit.Iso(abgerufen));
+        Stand: Zeit.Iso(abgerufen),
+        Bearbeitung: "Statuscode in Lage, Tendenz und Aktualität übersetzt, Gemeinde und Entfernung ergänzt, Auswahl nach Ort, Gewässer oder Stufe");
 
     /// <summary>Tool <c>pegel_in_der_naehe</c>.</summary>
     public async Task<Teilantwort> InDerNaeheAsync(string ort, double radiusKm = 15, CancellationToken ct = default)

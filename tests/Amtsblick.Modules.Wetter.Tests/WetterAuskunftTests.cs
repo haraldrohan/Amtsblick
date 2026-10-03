@@ -52,10 +52,13 @@ public class WetterPrognoseTests
         Assert.Equal(22.8, tage[1].GetProperty("temp_max").GetDouble());
 
         var quelle = antwort.GetProperty("quellen")[0];
-        Assert.Equal("Datenquelle: GeoSphere Austria", quelle.GetProperty("vermerk").GetString());
+        Assert.Equal("Datenquelle: GeoSphere Austria - https://data.hub.geosphere.at", quelle.GetProperty("vermerk").GetString());
         Assert.Equal("https://data.hub.geosphere.at", quelle.GetProperty("link").GetString());
         Assert.Equal("nwp-v2-1h-1km", quelle.GetProperty("datensatz").GetString());
         Assert.Equal("CC BY 4.0", quelle.GetProperty("lizenz").GetString());
+        Assert.Equal("https://creativecommons.org/licenses/by/4.0/deed.de", quelle.GetProperty("lizenz_link").GetString());
+        Assert.Equal("https://doi.org/10.60669/rv80-9d61", quelle.GetProperty("doi").GetString());
+        Assert.Contains("Einheiten umgerechnet", quelle.GetProperty("bearbeitung").GetString());
         Assert.Equal("Keine amtliche Unwetterwarnung.", Hinweise(antwort)[^1]);
     }
 
@@ -209,7 +212,7 @@ public class WetterPrognoseTests
         var antwort = Json(await umgebung.Auskunft.PrognoseAsync("Steyr"));
 
         Assert.Contains("nicht verfügbar", antwort.GetProperty("zusammenfassung").GetString());
-        Assert.Equal("Datenquelle: GeoSphere Austria", antwort.GetProperty("quellen")[0].GetProperty("vermerk").GetString());
+        Assert.Equal(WetterAuskunft.Namensnennung, antwort.GetProperty("quellen")[0].GetProperty("vermerk").GetString());
         Assert.Contains(WetterAuskunft.Hinweis, Hinweise(antwort));
     }
 
