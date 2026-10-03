@@ -10,7 +10,7 @@ Stand: 2. Oktober 2026. Geprüft vor dem ersten Einbau der jeweiligen Quelle.
 | GitHub | 0 Repositories, kein Benutzer und keine Organisation dieses Namens |
 | `amtsblick.at` | nicht registriert (Whois nic.at: „nothing found") |
 | Österreichisches Patentamt (Markenregister) | kein Treffer (geprüft vom Projektinhaber am 3. Oktober 2026) |
-| EUIPO (Unionsmarken) | nicht geprüft |
+| TMview (Unionsmarken des EUIPO und nationale Register) | kein Treffer (geprüft vom Projektinhaber am 3. Oktober 2026) |
 
 Keine Kollision. Weil „Amt" nach Behörde klingt, stellt der Haftungshinweis in der README klar, dass
 Amtsblick kein amtlicher Dienst ist; behördliche Logos oder Wappen werden nicht verwendet.
