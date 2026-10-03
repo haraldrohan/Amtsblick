@@ -136,3 +136,42 @@ public class GemeindeTests
         Assert.InRange(km, 29, 32);
     }
 }
+
+public class ErstimportTests
+{
+    [Fact]
+    public void Ersetztes_Verzeichnis_wird_von_der_Ortssuche_sofort_verwendet()
+    {
+        var verzeichnis = GemeindeVerzeichnis.Leer;
+        var orte = new OrtResolver(verzeichnis);
+        verzeichnis.Ladehinweis = "Die Gemeindedaten werden gerade geladen.";
+
+        var vorher = orte.Loese("Steyr");
+        Assert.False(vorher.Eindeutig);
+        Assert.Equal("Die Gemeindedaten werden gerade geladen.", vorher.Hinweis);
+
+        verzeichnis.Ersetze(Testgemeinden.Verzeichnis());
+
+        Assert.Equal("40201", orte.Loese("Steyr").Gemeinde?.Gkz);
+        Assert.Equal("40201", orte.Finde(new Koordinate(48.04331855, 14.42493069))?.Gkz);
+        Assert.Null(verzeichnis.Ladehinweis);
+        Assert.Equal(new DateOnly(2026, 1, 1), verzeichnis.Gebietsstand);
+        Assert.True(GemeindeVerzeichnis.Leer.IstLeer);
+    }
+
+    [Fact]
+    public void Quellenzeile_nennt_jeden_Vermerk_einmal_mit_Lizenz_und_Bearbeitung()
+    {
+        var a = new Amtsblick.Core.Quellen.Quellenvermerk("A", "CC BY 4.0", "https://example.org/l", "Datenquelle: A", "https://a.example", "ds-1");
+        var b = a with { Datensatz = "ds-2" };
+        var c = new Amtsblick.Core.Quellen.Quellenvermerk("C", "CC BY 4.0", "https://example.org/l", "Datenquelle: C", "https://c.example")
+        {
+            BearbeitungKurz = "Daten aufbereitet",
+        };
+
+        Assert.Equal(
+            "Datenquelle: A (CC BY 4.0, https://example.org/l; Daten umgerechnet und zusammengefasst) · "
+            + "Datenquelle: C (CC BY 4.0, https://example.org/l; Daten aufbereitet)",
+            ToolAntwort.Quellenzeile([a, b, c]));
+    }
+}

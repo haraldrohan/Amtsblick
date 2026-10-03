@@ -201,7 +201,7 @@ public class HttpTests
 
         Assert.Equal($"Amtsblick/{UserAgent.Version} (+https://example.org/repo; betrieb@example.org)", mit);
         Assert.Equal($"Amtsblick/{UserAgent.Version} (+https://example.org/repo)", ohne);
-        Assert.Matches(@"^\d+\.\d+\.\d+$", UserAgent.Version);
+        Assert.Matches(@"^\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?$", UserAgent.Version);
     }
 }
 

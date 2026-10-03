@@ -46,6 +46,7 @@ public sealed class PegelDienst(
     private readonly Lock _sperre = new();
     private Task? _laufend;
     private bool _geladen;
+    private int _gemeindenVersion = gemeinden.Version;
     private DateTimeOffset? _letzterVersuch;
     private Pegelstand _stand = new([], null, false, null, null);
 
@@ -59,6 +60,8 @@ public sealed class PegelDienst(
                 _geladen = true;
                 LadeGespeichertenStand();
             }
+
+            GleicheGemeindenAb();
 
             return _stand;
         }
@@ -79,6 +82,8 @@ public sealed class PegelDienst(
                 _geladen = true;
                 LadeGespeichertenStand();
             }
+
+            GleicheGemeindenAb();
 
             if (string.IsNullOrWhiteSpace(optionen.Value.Kontakt))
             {
@@ -129,6 +134,21 @@ public sealed class PegelDienst(
         messstelle.Ort is { } ort && gemeinden.Finde(ort) is { } gemeinde
             ? messstelle with { Gkz = gemeinde.Gkz, Gemeinde = gemeinde.Name, Bundesland = gemeinde.Bundesland }
             : messstelle;
+
+    // Wurden die Gemeinden nach dem Abruf geladen oder ersetzt, werden die Messstellen neu zugeordnet.
+    private void GleicheGemeindenAb()
+    {
+        if (_gemeindenVersion == gemeinden.Version)
+        {
+            return;
+        }
+
+        _gemeindenVersion = gemeinden.Version;
+        _stand = _stand with
+        {
+            Messstellen = _stand.Messstellen.Select(m => MitGemeinde(m with { Gkz = null, Gemeinde = null, Bundesland = null })).ToList(),
+        };
+    }
 
     private void LadeGespeichertenStand()
     {

@@ -35,7 +35,10 @@ public sealed class PegelAuskunft(PegelDienst dienst, OrtResolver orte, Statisti
         Link: "https://ehyd.gv.at",
         Datensatz: EhydClient.Layer,
         Stand: Zeit.Iso(abgerufen),
-        Bearbeitung: "Statuscode in Lage, Tendenz und Aktualität übersetzt, Gemeinde und Entfernung ergänzt, Auswahl nach Ort, Gewässer oder Stufe");
+        Bearbeitung: "Statuscode in Lage, Tendenz und Aktualität übersetzt, Gemeinde und Entfernung ergänzt, Auswahl nach Ort, Gewässer oder Stufe")
+    {
+        BearbeitungKurz = "Daten aufbereitet und zusammengefasst",
+    };
 
     /// <summary>Tool <c>pegel_in_der_naehe</c>.</summary>
     public async Task<Teilantwort> InDerNaeheAsync(string ort, double radiusKm = 15, CancellationToken ct = default)

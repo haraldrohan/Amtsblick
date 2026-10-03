@@ -2,12 +2,16 @@ using Amtsblick.Core;
 using Amtsblick.Core.Http;
 using Amtsblick.Modules.Wasser;
 using Amtsblick.Modules.Wetter;
+using ModelContextProtocol.AspNetCore;
 using ModelContextProtocol.Protocol;
 
 namespace Amtsblick.Server;
 
 public static class ServerRegistrierung
 {
+    public const string Kurzbeschreibung =
+        "Amtliche österreichische Daten nach Ort: Wetter (GeoSphere Austria) und Pegel (eHYD). " + ToolAntwort.Pflichthinweis;
+
     /// <summary>
     /// Kern und alle Module, die in der Konfiguration nicht abgeschaltet sind
     /// (<c>Amtsblick:Module:&lt;Name&gt;:Aktiv</c>, Standard an). Ein abgeschaltetes Modul wird nicht
@@ -19,9 +23,17 @@ public static class ServerRegistrierung
         var mcp = services
             .AddMcpServer(o =>
             {
-                o.ServerInfo = new Implementation { Name = "amtsblick", Title = "Amtsblick", Version = UserAgent.Version };
+                o.ServerInfo = new Implementation
+                {
+                    Name = "amtsblick",
+                    Title = "Amtsblick",
+                    Version = UserAgent.Version,
+                    Description = Kurzbeschreibung,
+                    WebsiteUrl = "https://github.com/haraldrohan/Amtsblick",
+                };
                 o.ServerInstructions =
-                    "Amtliche österreichische Daten nach Ort: Wetter (GeoSphere Austria) und Pegel (eHYD). "
+                    ToolAntwort.Pflichthinweis
+                    + " Amtliche österreichische Daten nach Ort: Wetter (GeoSphere Austria) und Pegel (eHYD). "
                     + "Orte sind Gemeinden; bei mehrdeutigen Namen zuerst ort_finden nutzen. "
                     + "Jede Antwort enthält Quellenvermerke und Hinweise, die an Nutzer weiterzugeben sind. "
                     + "Die Daten ersetzen keine amtlichen Warnungen.";
@@ -41,5 +53,26 @@ public static class ServerRegistrierung
         }
 
         return mcp;
+    }
+
+    /// <summary>Der Server für Streamable HTTP mit Schutzschicht, MCP-Endpunkt /mcp und /health.</summary>
+    public static WebApplication ErzeugeHttpApp(string[] args, Action<WebApplicationBuilder>? anpassen = null)
+    {
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        {
+            Args = args,
+            ContentRootPath = AppContext.BaseDirectory,
+        });
+        anpassen?.Invoke(builder);
+        builder.Services.AddAmtsblick(builder.Configuration)
+            .WithHttpTransport(o => o.SessionMode = HttpServerSessionMode.Stateless);
+        builder.Services.AddAmtsblickHttpSchutz(builder.Configuration);
+
+        var app = builder.Build();
+        app.UseAmtsblickHttpSchutz();
+        app.MapMcp("/mcp").RequireRateLimiting(HttpSchutz.Richtlinie);
+        app.MapGet("/health", Gesundheit.Antwort);
+        app.MapGet("/", () => $"Amtsblick {UserAgent.Version} – MCP-Endpunkt (Streamable HTTP): /mcp\n{ToolAntwort.Pflichthinweis}\n");
+        return app;
     }
 }

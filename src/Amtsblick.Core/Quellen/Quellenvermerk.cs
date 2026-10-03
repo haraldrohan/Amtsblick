@@ -25,6 +25,10 @@ public sealed record Quellenvermerk(
 {
     public const string CcBy40 = "CC BY 4.0";
     public const string CcBy40Link = "https://creativecommons.org/licenses/by/4.0/deed.de";
+
+    /// <summary>Kurzform von <see cref="Bearbeitung"/> für die Zusammenfassungszeile.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string BearbeitungKurz { get; init; } = "Daten umgerechnet und zusammengefasst";
 }
 
 /// <summary>Jedes aktive Modul meldet hierüber seine Quellen für das Tool <c>quellen</c>.</summary>
@@ -46,7 +50,10 @@ public sealed class StatistikAustriaQuelle(GemeindeVerzeichnis verzeichnis) : IQ
         Link: "https://data.statistik.gv.at",
         Datensatz: "OGDEXT_GEM_1, OGDEXT_POLBEZ_1",
         Stand: verzeichnis.Gebietsstand?.ToString("yyyy-MM-dd"),
-        Bearbeitung: "Gemeindemittelpunkte aus den Grenzen berechnet, Schreibweise der Bezirksnamen vereinheitlicht, Wien als Ganzes ergänzt");
+        Bearbeitung: "Gemeindemittelpunkte aus den Grenzen berechnet, Schreibweise der Bezirksnamen vereinheitlicht, Wien als Ganzes ergänzt")
+    {
+        BearbeitungKurz = "Daten aufbereitet",
+    };
 
     public IEnumerable<Quellenvermerk> Quellen() => [Vermerk with { LetzterAbruf = Zeit.Iso(verzeichnis.Importiert) }];
 }

@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amtsblick.Modules.Wetter", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amtsblick.Modules.Wetter.Tests", "tests\Amtsblick.Modules.Wetter.Tests\Amtsblick.Modules.Wetter.Tests.csproj", "{29937A80-CF66-489C-8977-2CE0E7F60593}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amtsblick.Server.Tests", "tests\Amtsblick.Server.Tests\Amtsblick.Server.Tests.csproj", "{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,6 +117,18 @@ Global
 		{29937A80-CF66-489C-8977-2CE0E7F60593}.Release|x64.Build.0 = Release|Any CPU
 		{29937A80-CF66-489C-8977-2CE0E7F60593}.Release|x86.ActiveCfg = Release|Any CPU
 		{29937A80-CF66-489C-8977-2CE0E7F60593}.Release|x86.Build.0 = Release|Any CPU
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}.Debug|x64.Build.0 = Debug|Any CPU
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}.Debug|x86.Build.0 = Debug|Any CPU
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}.Release|x64.ActiveCfg = Release|Any CPU
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}.Release|x64.Build.0 = Release|Any CPU
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}.Release|x86.ActiveCfg = Release|Any CPU
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -127,5 +141,6 @@ Global
 		{2921D44D-EDDE-42CA-8526-C18CBA66F453} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{2B2D078D-7B3C-4DA9-B53E-45F4DD76228E} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{29937A80-CF66-489C-8977-2CE0E7F60593} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{50909A5E-7C8C-4EAE-90F5-FA6669D0480E} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal

@@ -15,10 +15,17 @@ public sealed class AmtsblickOptionen
     public string Kontakt { get; set; } = "";
 
     /// <summary>
-    /// Verzeichnis der importierten Referenzdaten. Leer: der Ordner "data" im Repository,
-    /// sonst neben der Programmdatei.
+    /// Verzeichnis der importierten Referenzdaten. Leer: der Ordner "data" im Repository, wenn das
+    /// Programm aus einem Arbeitsverzeichnis des Repositorys läuft, sonst "Amtsblick" im lokalen
+    /// Anwendungsdatenordner des Benutzers.
     /// </summary>
     public string DatenVerzeichnis { get; set; } = "";
+
+    /// <summary>
+    /// Fehlen die Gemeindedaten beim Start, lädt der Server sie selbst von der Statistik Austria
+    /// (einmalig, rund 90 MB). Aus: nur der Aufruf mit dem Argument "import" lädt sie.
+    /// </summary>
+    public bool AutoImport { get; set; } = true;
 
     public string ErmittleDatenVerzeichnis()
     {
@@ -35,6 +42,6 @@ public sealed class AmtsblickOptionen
             }
         }
 
-        return Path.Combine(AppContext.BaseDirectory, "data");
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Amtsblick");
     }
 }

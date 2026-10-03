@@ -21,10 +21,25 @@ public static class ToolAntwort
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
     };
 
+    /// <summary>Gilt für das Projekt als Ganzes und steht in Server-Beschreibung, README und Verzeichniseinträgen.</summary>
+    public const string Pflichthinweis =
+        "Amtsblick ist ein privates Open-Source-Projekt und kein offizielles Angebot einer Behörde.";
+
     /// <param name="daten">Objekt, dessen Eigenschaften in die Antwort übernommen werden; null für keine.</param>
+    /// <param name="quellenInZusammenfassung">
+    /// Hängt die Quellenvermerke an die Zusammenfassung an, damit sie auch dann beim Nutzer ankommen,
+    /// wenn ein Modell nur diese Zeile weitergibt.
+    /// </param>
     public static string Erzeuge(
-        string zusammenfassung, object? daten, IEnumerable<Quellenvermerk> quellen, IEnumerable<string?> hinweise)
+        string zusammenfassung, object? daten, IEnumerable<Quellenvermerk> quellen, IEnumerable<string?> hinweise,
+        bool quellenInZusammenfassung = true)
     {
+        var vermerke = quellen.ToList();
+        if (quellenInZusammenfassung && Quellenzeile(vermerke) is { Length: > 0 } zeile)
+        {
+            zusammenfassung = $"{zusammenfassung} {zeile}";
+        }
+
         var antwort = new JsonObject { ["zusammenfassung"] = zusammenfassung };
         if (daten is not null && JsonSerializer.SerializeToNode(daten, Json) is JsonObject objekt)
         {
@@ -35,10 +50,20 @@ public static class ToolAntwort
             }
         }
 
-        antwort["quellen"] = JsonSerializer.SerializeToNode(quellen, Json);
+        antwort["quellen"] = JsonSerializer.SerializeToNode(vermerke, Json);
         antwort["hinweise"] = JsonSerializer.SerializeToNode(hinweise.Where(h => !string.IsNullOrWhiteSpace(h)), Json);
         return antwort.ToJsonString(Json);
     }
+
+    /// <summary>
+    /// Je Vermerk einmal: Wortlaut des Datengebers, Lizenz mit Link und Kurzangabe zur Bearbeitung, z. B.
+    /// "Datenquelle: ehyd.gv.at (CC BY 4.0, https://…/deed.de; Daten aufbereitet und zusammengefasst)".
+    /// </summary>
+    public static string Quellenzeile(IEnumerable<Quellenvermerk> quellen) =>
+        string.Join(" · ", quellen
+            .GroupBy(q => q.Vermerk)
+            .Select(g => g.First())
+            .Select(q => $"{q.Vermerk} ({q.Lizenz}, {q.LizenzLink}; {q.BearbeitungKurz})"));
 }
 
 /// <summary>Zeitangaben für Antworten in österreichischer Ortszeit.</summary>

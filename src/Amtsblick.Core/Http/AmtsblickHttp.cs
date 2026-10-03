@@ -1,4 +1,5 @@
 using System.Net;
+using System.Reflection;
 using Amtsblick.Core.Kontingent;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -7,7 +8,11 @@ namespace Amtsblick.Core.Http;
 
 public static class UserAgent
 {
-    public static string Version { get; } = typeof(UserAgent).Assembly.GetName().Version?.ToString(3) ?? "0.0.0";
+    /// <summary>Paketversion samt Vorabkennung, z. B. 0.1.0-beta.</summary>
+    public static string Version { get; } =
+        typeof(UserAgent).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+        ?? typeof(UserAgent).Assembly.GetName().Version?.ToString(3)
+        ?? "0.0.0";
 
     /// <summary>"Amtsblick/&lt;version&gt; (+&lt;Repo-URL&gt;; &lt;Kontaktadresse&gt;)"; ohne Kontakt entfällt der zweite Teil.</summary>
     public static string Erzeuge(AmtsblickOptionen optionen) =>

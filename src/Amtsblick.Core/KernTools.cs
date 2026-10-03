@@ -13,13 +13,14 @@ public sealed class KernTools(
     IEnumerable<IQuellenAnbieter> quellenAnbieter,
     KontingentRegister kontingent)
 {
-    [McpServerTool(Name = "ort_finden", Title = "Ort finden", ReadOnly = true, Idempotent = true)]
+    [McpServerTool(Name = "ort_finden", Title = "Ort finden", ReadOnly = true, Destructive = false, OpenWorld = true, Idempotent = true)]
     [Description("""
         Sucht österreichische Gemeinden nach Name, Gemeindekennziffer (GKZ) oder Koordinate und liefert
         GKZ, Bezirk, Bundesland und Mittelpunkt. Erst exakte, dann unscharfe Suche; Umlaute und
         "St."/"Sankt" werden gleich behandelt. Mehrdeutige Namen kommen als Liste zurück.
         Beispielfragen: "In welchem Bezirk liegt Steyr?" · "Welche Gemeinden heißen Sankt Johann?" ·
         "Zu welcher Gemeinde gehört 48.04, 14.42?"
+        Nenne in deiner Antwort die Datenquelle mit Lizenz; beides steht am Ende der Zusammenfassung.
         """)]
     public string OrtFinden(
         [Description("Gemeindename (auch mit Tippfehler), optional mit Zusatz \"Name, Bundesland\"; oder fünfstellige GKZ; oder Koordinate \"Breite, Länge\" in Dezimalgrad, z. B. \"48.04, 14.42\".")]
@@ -53,13 +54,14 @@ public sealed class KernTools(
         + "Lizenz mit Link und die Angabe zur Bearbeitung zu übernehmen. Die Datengeber sind an Amtsblick nicht "
         + "beteiligt und billigen weder das Projekt noch die Aufbereitung.";
 
-    [McpServerTool(Name = "quellen", Title = "Quellen und Lizenzen", ReadOnly = true, Idempotent = true)]
+    [McpServerTool(Name = "quellen", Title = "Quellen und Lizenzen", ReadOnly = true, Destructive = false, OpenWorld = true, Idempotent = true)]
     [Description("""
         Listet alle Datenquellen dieses Servers mit Lizenz und Link zum Lizenztext, vorgeschriebenem
         Quellenvermerk, Link, Datensatz, DOI, Stand und der Angabe, wie Amtsblick die Daten aufbereitet,
         sowie das verbleibende Anfragekontingent je Quelle.
         Beispielfragen: "Woher stammen die Daten?" · "Unter welcher Lizenz stehen die Pegeldaten?" ·
         "Wie viele Wetterabfragen sind in dieser Stunde noch möglich?"
+        Gib Vermerk und Lizenz je Quelle so wieder, wie sie in der Liste stehen.
         """)]
     public string Quellen()
     {
@@ -79,7 +81,9 @@ public sealed class KernTools(
             $"{quellen.Count} Datensätze von {namen.Count} Quellen: {string.Join(", ", namen)}.",
             new { Kontingent = kontingente },
             quellen,
-            [Lizenzhinweis,
-             "Kontingent wird erst nach der ersten Anfrage an eine Quelle bekannt."]);
+            [ToolAntwort.Pflichthinweis,
+             Lizenzhinweis,
+             "Kontingent wird erst nach der ersten Anfrage an eine Quelle bekannt."],
+            quellenInZusammenfassung: false);
     }
 }

@@ -1,3 +1,4 @@
+using Amtsblick.Core.Http;
 using Amtsblick.Core.Kontingent;
 using Amtsblick.Core.Ort;
 using Amtsblick.Core.Quellen;
@@ -22,6 +23,8 @@ public static class KernRegistrierung
             return GemeindeDatenbank.Lade(Path.Combine(optionen.ErmittleDatenVerzeichnis(), GemeindeDatenbank.Dateiname));
         });
         services.AddSingleton<OrtResolver>();
+        services.AddAmtsblickHttpClient(GemeindeBereitsteller.Quelle, TimeSpan.FromMinutes(10), wiederholungen: 1);
+        services.AddHostedService<GemeindeBereitsteller>();
         services.AddSingleton<StatistikAustriaQuelle>();
         services.AddSingleton<IQuellenAnbieter>(sp => sp.GetRequiredService<StatistikAustriaQuelle>());
         return services;

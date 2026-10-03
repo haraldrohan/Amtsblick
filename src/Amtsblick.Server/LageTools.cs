@@ -15,7 +15,7 @@ public sealed class LageTools(OrtResolver orte, WetterAuskunft wetter, Statistik
     private const double PegelRadiusKm = 15;
     private const int MaxPegel = 5;
 
-    [McpServerTool(Name = "lage_am_ort", Title = "Lage am Ort", ReadOnly = true, OpenWorld = true)]
+    [McpServerTool(Name = "lage_am_ort", Title = "Lage am Ort", ReadOnly = true, Destructive = false, OpenWorld = true)]
     [Description("""
         Überblick für eine österreichische Gemeinde in einem Aufruf: aktuelles Wetter und Niederschlag der
         nächsten 3 Stunden (Nowcast), Prognose der nächsten 24 Stunden und – wenn das Modul Wasser aktiv ist –
@@ -23,6 +23,7 @@ public sealed class LageTools(OrtResolver orte, WetterAuskunft wetter, Statistik
         oder pegel_in_der_naehe verwenden. Keine amtliche Warnung.
         Beispielfragen: "Wie ist die Lage in Steyr?" · "Was ist gerade in Schärding los, Wetter und Wasser?" ·
         "Gib mir einen Überblick für Hallein."
+        Nenne in deiner Antwort die Datenquelle mit Lizenz; beides steht am Ende der Zusammenfassung.
         """)]
     public async Task<string> LageAmOrt(
         [Description("Gemeindename, optional \"Name, Bundesland\"; oder fünfstellige GKZ; oder Koordinate \"Breite, Länge\", z. B. \"48.04, 14.42\".")]

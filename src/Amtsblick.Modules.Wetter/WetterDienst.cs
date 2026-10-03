@@ -145,7 +145,8 @@ public sealed class WetterDienst(
         }
         catch (Exception fehler) when (IstAbruffehler(fehler))
         {
-            log?.LogWarning("Abruf von {Ressource} für {Punkt} gescheitert: {Fehler}", ressource.Id, punkt, fehler.Message);
+            // Ohne Koordinate: Logs sollen keine abgefragten Orte enthalten.
+            log?.LogWarning("Abruf von {Ressource} gescheitert: {Fehler}", ressource.Id, fehler.Message);
             _fehler[schluessel] = (zeit.GetUtcNow(), fehler.Message);
             return (null, fehler.Message);
         }

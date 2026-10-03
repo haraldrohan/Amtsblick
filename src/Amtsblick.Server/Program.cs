@@ -2,26 +2,27 @@ using Amtsblick.Core;
 using Amtsblick.Core.Http;
 using Amtsblick.Core.Ort;
 using Amtsblick.Core.Quellen;
-using Amtsblick.Modules.Wasser;
-using Amtsblick.Modules.Wetter;
 using Amtsblick.Server;
-using ModelContextProtocol.AspNetCore;
 
 // Aufruf:
-//   Amtsblick.Server            MCP über Streamable HTTP (Endpunkt /mcp)
-//   Amtsblick.Server --stdio    MCP über stdio, z. B. für Claude Desktop
-//   Amtsblick.Server import     Gemeinden der Statistik Austria nach data/gemeinden.sqlite laden
+//   amtsblick              MCP über stdio (Standard; so starten Clients den Server)
+//   amtsblick --http       MCP über Streamable HTTP (Endpunkt /mcp), für den gehosteten Betrieb
+//   amtsblick import       Gemeinden der Statistik Austria laden und in SQLite ablegen
+// "--stdio" wird weiterhin angenommen, ist aber nicht mehr nötig.
 
 if (args is ["import", ..])
 {
     return await ImportiereAsync();
 }
 
-if (args.Contains("--stdio"))
+var http = args.Contains("--http");
+string[] rest = [.. args.Where(a => a is not ("--http" or "--stdio"))];
+
+if (!http)
 {
     var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
     {
-        Args = [.. args.Where(a => a != "--stdio")],
+        Args = rest,
         ContentRootPath = AppContext.BaseDirectory,
     });
 
@@ -32,18 +33,7 @@ if (args.Contains("--stdio"))
 }
 else
 {
-    var builder = WebApplication.CreateBuilder(new WebApplicationOptions
-    {
-        Args = args,
-        ContentRootPath = AppContext.BaseDirectory,
-    });
-    builder.Services.AddAmtsblick(builder.Configuration)
-        .WithHttpTransport(o => o.SessionMode = HttpServerSessionMode.Stateless);
-
-    var app = builder.Build();
-    app.MapMcp("/mcp");
-    app.MapGet("/", () => $"Amtsblick {UserAgent.Version} – MCP-Endpunkt (Streamable HTTP): /mcp");
-    await app.RunAsync();
+    await ServerRegistrierung.ErzeugeHttpApp(rest).RunAsync();
 }
 
 return 0;

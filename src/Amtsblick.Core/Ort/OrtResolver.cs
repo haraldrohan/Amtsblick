@@ -37,19 +37,37 @@ public sealed record OrtAufloesung(
 public sealed class OrtResolver
 {
     private readonly GemeindeVerzeichnis _verzeichnis;
-    private readonly List<(Gemeinde Gemeinde, string Norm, string[] Woerter)> _eintraege;
+    private volatile Suchindex? _index;
 
     public OrtResolver(GemeindeVerzeichnis verzeichnis)
     {
         _verzeichnis = verzeichnis;
-        _eintraege = verzeichnis.Alle
-            .Select(g =>
-            {
-                var norm = Namensnormalisierung.Normalisiere(g.Name);
-                return (g, norm, norm.Split(' '));
-            })
-            .ToList();
     }
+
+    // Der Suchindex wird beim ersten Gebrauch gebaut und neu gebaut, wenn das Verzeichnis ersetzt wurde.
+    private List<(Gemeinde Gemeinde, string Norm, string[] Woerter)> Eintraege
+    {
+        get
+        {
+            var index = _index;
+            var version = _verzeichnis.Version;
+            if (index is null || index.Version != version)
+            {
+                index = new Suchindex(version, _verzeichnis.Alle
+                    .Select(g =>
+                    {
+                        var norm = Namensnormalisierung.Normalisiere(g.Name);
+                        return (g, norm, norm.Split(' '));
+                    })
+                    .ToList());
+                _index = index;
+            }
+
+            return index.Eintraege;
+        }
+    }
+
+    private sealed record Suchindex(int Version, List<(Gemeinde Gemeinde, string Norm, string[] Woerter)> Eintraege);
 
     /// <summary>Koordinate → Gemeinde per Punkt-in-Polygon.</summary>
     public Gemeinde? Finde(Koordinate punkt) => _verzeichnis.Finde(punkt);
@@ -80,7 +98,7 @@ public sealed class OrtResolver
             return [];
         }
 
-        var treffer = _eintraege
+        var treffer = Eintraege
             .Where(e => e.Norm == gesucht)
             .Select(e => new OrtTreffer(e.Gemeinde, TrefferArt.Exakt))
             .ToList();
@@ -88,7 +106,7 @@ public sealed class OrtResolver
         if (treffer.Count == 0)
         {
             var woerter = gesucht.Split(' ');
-            treffer = _eintraege
+            treffer = Eintraege
                 .Where(e => EnthaeltWortfolge(e.Woerter, woerter))
                 .Select(e => new OrtTreffer(e.Gemeinde, TrefferArt.Teilname))
                 .ToList();
@@ -98,7 +116,7 @@ public sealed class OrtResolver
         {
             var grenze = gesucht.Length <= 4 ? 1 : gesucht.Length <= 9 ? 2 : 3;
             var wortzahl = gesucht.Count(c => c == ' ') + 1;
-            treffer = _eintraege
+            treffer = Eintraege
                 .Select(e => new OrtTreffer(e.Gemeinde, TrefferArt.Unscharf, UnscharferAbstand(gesucht, wortzahl, e.Norm, e.Woerter)))
                 .Where(t => t.Abstand <= grenze)
                 .ToList();
@@ -133,7 +151,8 @@ public sealed class OrtResolver
         if (_verzeichnis.IstLeer)
         {
             return new OrtAufloesung(null, default, [],
-                "Referenzdaten fehlen: Gemeinden wurden noch nicht importiert (scripts/import-gemeinden ausführen).");
+                _verzeichnis.Ladehinweis
+                ?? "Referenzdaten fehlen: Die Gemeinden wurden noch nicht importiert (Aufruf mit dem Argument \"import\").");
         }
 
         var treffer = Finde(text);
