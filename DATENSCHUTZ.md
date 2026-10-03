@@ -10,7 +10,7 @@ Amtsblick ist ein privates Open-Source-Projekt und kein offizielles Angebot eine
 ## Verantwortlicher
 
 - Betreiber: Harald Rohan, Österreich
-- Kontakt in Datenschutzfragen: [haraldrohan@outlook.de](mailto:haraldrohan@outlook.de)
+- Kontakt in Datenschutzfragen: [haraldrohan@gmail.com](mailto:haraldrohan@gmail.com)
 
 ## Kurzfassung
 
@@ -101,7 +101,7 @@ Amtsblick is a private open-source project and not an official service of any pu
 ## Controller
 
 - Operator: Harald Rohan, Austria
-- Contact for privacy matters: [haraldrohan@outlook.de](mailto:haraldrohan@outlook.de)
+- Contact for privacy matters: [haraldrohan@gmail.com](mailto:haraldrohan@gmail.com)
 
 ## In short
 

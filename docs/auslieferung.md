@@ -120,7 +120,7 @@ gelesen am 3. Oktober 2026. Die Einreichung selbst macht der Projektinhaber übe
 | In Claude als eigener Connector getestet, jedes Tool aufgerufen | offen: nach dem Deployment |
 | Dokumentations-URL | vorbereitet: README im Repository |
 | URL der Datenschutzerklärung | vorbereitet: `<Adresse des Servers>/datenschutz` |
-| Support-Kontakt | haraldrohan@outlook.de oder GitHub Issues |
+| Support-Kontakt | haraldrohan@gmail.com oder GitHub Issues |
 | Icon | vorhanden: `assets/icon-512.png` |
 | Testzugang für Prüfer | entfällt: keine Anmeldung; Testanleitung unten |
 | Konto, das einreichen darf | offen: bezahlter Claude-Tarif des Projektinhabers |
