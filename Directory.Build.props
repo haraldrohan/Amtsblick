@@ -7,6 +7,8 @@
     <RepositoryUrl>https://github.com/haraldrohan/Amtsblick</RepositoryUrl>
     <LangVersion>latest</LangVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <!-- Nur das Server-Projekt wird als Paket ausgeliefert. -->
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
 </Project>

@@ -1,0 +1,49 @@
+name: Container prüfen
+
+# Baut das Image und prüft den laufenden Container, ohne etwas zu veröffentlichen oder zu deployen.
+# Von Hand zu starten: Actions > Container prüfen > Run workflow.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Image bauen
+        run: docker build -t amtsblick:test .
+
+      - name: Größe und Benutzer
+        run: |
+          docker image ls amtsblick:test
+          docker run --rm --entrypoint id amtsblick:test
+
+      - name: Container starten
+        run: |
+          docker run -d --name amtsblick -p 8080:8080 amtsblick:test
+          for i in $(seq 1 30); do curl -fsS http://localhost:8080/health && break; sleep 1; done
+
+      - name: Health prüfen
+        run: |
+          curl -fsS http://localhost:8080/health | tee health.json
+          grep -q '"status":"bereit"' health.json
+
+      - name: MCP prüfen (acht Tools, Ortssuche ohne Abruf bei einer Quelle)
+        run: |
+          rpc() { curl -fsS -X POST http://localhost:8080/mcp -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d "$1"; }
+          rpc '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' > tools.txt
+          test "$(grep -o '"name":"[a-z_]*"' tools.txt | sort -u | wc -l)" = 8
+          rpc '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"ort_finden","arguments":{"text":"Steyr"}}}' | grep -q '40201'
+
+      - name: Origin-Prüfung
+        run: |
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Origin: https://boese.example' http://localhost:8080/health)" = 403
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Origin: https://claude.ai' http://localhost:8080/health)" = 200
+
+      - name: Protokoll
+        if: always()
+        run: docker logs amtsblick | tail -n 40

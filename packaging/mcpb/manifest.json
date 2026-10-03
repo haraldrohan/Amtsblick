@@ -1,0 +1,56 @@
+{
+  "manifest_version": "0.3",
+  "name": "amtsblick",
+  "display_name": "Amtsblick",
+  "version": "@VERSION@",
+  "description": "Wetter und Pegel je Gemeinde in Österreich. Privates Projekt, kein offizielles Behördenangebot.",
+  "long_description": "Amtsblick verknüpft amtliche österreichische Daten über den Ort: Wetterprognose und Nowcast der GeoSphere Austria und aktuelle Pegelstände des Hydrographischen Dienstes (eHYD), jeweils für eine Gemeinde.\n\nAmtsblick ist ein privates Open-Source-Projekt und kein offizielles Angebot einer Behörde. Die Antworten sind keine amtlichen Warnungen; maßgeblich sind die Warndienste von GeoSphere Austria und der Länder.\n\nAlle Daten stehen unter CC BY 4.0. Jede Antwort nennt Quelle, Lizenz und Bearbeitung.\n\nBeim ersten Start lädt Amtsblick einmalig die Gemeindegrenzen der Statistik Austria (rund 90 MB Download, 60 MB auf der Platte). Das dauert ein bis zwei Minuten.",
+  "author": {
+    "name": "Amtsblick-Mitwirkende",
+    "url": "https://github.com/haraldrohan/Amtsblick"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/haraldrohan/Amtsblick"
+  },
+  "homepage": "https://haraldrohan.github.io/Amtsblick/",
+  "documentation": "https://github.com/haraldrohan/Amtsblick#readme",
+  "support": "https://github.com/haraldrohan/Amtsblick/issues",
+  "icon": "icon.png",
+  "license": "MIT",
+  "keywords": ["österreich", "wetter", "pegel", "hochwasser", "gemeinde", "open data"],
+  "privacy_policies": ["https://haraldrohan.github.io/Amtsblick/datenschutz.html"],
+  "server": {
+    "type": "binary",
+    "entry_point": "server/@BINARY@",
+    "mcp_config": {
+      "command": "${__dirname}/server/@BINARY@",
+      "args": [],
+      "env": {
+        "Amtsblick__Kontakt": "${user_config.kontakt}"
+      }
+    }
+  },
+  "user_config": {
+    "kontakt": {
+      "type": "string",
+      "title": "Kontaktadresse (E-Mail)",
+      "description": "Wird im User-Agent an die Datenquellen gesendet, damit deren Betreiber Sie erreichen können. Ohne Kontaktadresse ruft Amtsblick keine Pegeldaten ab; Wetter und Ortssuche funktionieren auch ohne.",
+      "required": false,
+      "default": ""
+    }
+  },
+  "tools": [
+    { "name": "ort_finden", "description": "Gemeinde nach Name, GKZ oder Koordinate suchen" },
+    { "name": "quellen", "description": "Quellen, Lizenzen, Vermerke und letzter Abruf" },
+    { "name": "wetter_prognose", "description": "Wetterprognose in 6-Stunden-Blöcken, bis 61 Stunden" },
+    { "name": "niederschlag_jetzt", "description": "Niederschlag der nächsten 3 Stunden in 15-Minuten-Schritten" },
+    { "name": "lage_am_ort", "description": "Wetter, Nowcast und nächstgelegene Pegel für eine Gemeinde" },
+    { "name": "pegel_in_der_naehe", "description": "Pegelmessstellen im Umkreis einer Gemeinde" },
+    { "name": "pegel_an_gewaesser", "description": "Alle Pegelmessstellen eines Gewässers" },
+    { "name": "hochwasserlage", "description": "Messstellen ab erhöhter Wasserführung, nach Stufe" }
+  ],
+  "compatibility": {
+    "platforms": ["@PLATFORM@"]
+  }
+}

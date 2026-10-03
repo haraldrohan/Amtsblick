@@ -1,5 +1,7 @@
 # Amtsblick
 
+<!-- mcp-name: io.github.haraldrohan/amtsblick -->
+
 Amtsblick ist ein MCP-Server, der amtliche österreichische Daten über den Ort verknüpft. Ein
 KI-Assistent fragt nach einer Gemeinde und bekommt Wetter und Pegelstände dazu – jeweils mit
 Quellenvermerk, Stand und Einheiten.

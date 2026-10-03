@@ -6,6 +6,23 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- NuGet-Paket: ein .NET-Tool, das NuGet.org als MCP-Server führt und Clients mit
+       "dnx Amtsblick" starten. -->
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <PackageType>McpServer</PackageType>
+    <ToolCommandName>amtsblick</ToolCommandName>
+    <PackageId>Amtsblick</PackageId>
+    <Title>Amtsblick</Title>
+    <Description>MCP-Server für amtliche österreichische Daten nach Ort: Wetterprognose und Nowcast (GeoSphere Austria) und Pegelstände (eHYD) je Gemeinde. Amtsblick ist ein privates Open-Source-Projekt und kein offizielles Angebot einer Behörde.</Description>
+    <PackageTags>mcp;mcp-server;ModelContextProtocol;austria;oesterreich;open-data;wetter;pegel</PackageTags>
+    <PackageProjectUrl>https://github.com/haraldrohan/Amtsblick</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Amtsblick.Core\Amtsblick.Core.csproj" />
     <ProjectReference Include="..\Amtsblick.Modules.Wasser\Amtsblick.Modules.Wasser.csproj" />
@@ -19,7 +36,27 @@
   <!-- Die Konfiguration wird neben der Programmdatei gesucht, damit der Start per stdio
        aus jedem Arbeitsverzeichnis funktioniert. -->
   <ItemGroup>
-    <Content Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" Pack="false" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="/" />
+    <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="/" />
+    <None Include="..\..\assets\icon.png" Pack="true" PackagePath="/" />
+    <None Include=".mcp\server.json" Pack="true" PackagePath="/.mcp/" />
+  </ItemGroup>
+
+  <!-- Die Version steht an drei Stellen: in Directory.Build.props sowie in server.json oben und bei
+       packages[0]. Weichen sie ab, lehnt die MCP Registry den Eintrag ab; deshalb bricht der Build ab. -->
+  <Target Name="PruefeServerJsonVersion" BeforeTargets="BeforeBuild;GenerateNuspec">
+    <PropertyGroup>
+      <_ServerJson>$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)/.mcp/server.json'))</_ServerJson>
+      <_VersionsAngaben>$([System.Text.RegularExpressions.Regex]::Matches($(_ServerJson), '&quot;version&quot;\s*:').Count)</_VersionsAngaben>
+      <_VersionsTreffer>$([System.Text.RegularExpressions.Regex]::Matches($(_ServerJson), '&quot;version&quot;\s*:\s*&quot;$([System.Text.RegularExpressions.Regex]::Escape($(Version)))&quot;').Count)</_VersionsTreffer>
+    </PropertyGroup>
+    <Error Condition="'$(_VersionsAngaben)' != '2' Or '$(_VersionsTreffer)' != '2'"
+           Text=".mcp/server.json: beide Versionsangaben (oben und packages[0]) müssen der Paketversion $(Version) entsprechen; gefunden: $(_VersionsTreffer) von $(_VersionsAngaben)." />
+  </Target>
 
 </Project>

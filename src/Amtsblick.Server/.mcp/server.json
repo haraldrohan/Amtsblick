@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.haraldrohan/amtsblick",
+  "title": "Amtsblick",
+  "description": "Wetter und Pegel je Gemeinde in Österreich. Privates Projekt, kein offizielles Behördenangebot.",
+  "version": "0.1.0-beta",
+  "websiteUrl": "https://github.com/haraldrohan/Amtsblick",
+  "repository": {
+    "url": "https://github.com/haraldrohan/Amtsblick",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "nuget",
+      "registryBaseUrl": "https://api.nuget.org/v3/index.json",
+      "identifier": "Amtsblick",
+      "version": "0.1.0-beta",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "Amtsblick__Kontakt",
+          "description": "Kontaktadresse des Betreibers für den User-Agent (E-Mail). Ohne sie werden keine Pegeldaten abgerufen.",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
