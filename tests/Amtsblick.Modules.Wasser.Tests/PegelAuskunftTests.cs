@@ -139,6 +139,14 @@ public class PegelAuskunftTests
         Assert.Equal(0, antwort.GetProperty("stufen").GetArrayLength());
         Assert.Equal(300, antwort.GetProperty("messstellen_gesamt").GetInt32());
         Assert.Equal(5, antwort.GetProperty("messstellen_ohne_daten").GetInt32());
+        var ohneDaten = antwort.GetProperty("ohne_daten").EnumerateArray().ToList();
+        Assert.Equal(5, ohneDaten.Count);
+        var schladming = ohneDaten.Single(m => m.GetProperty("hzbnr").GetInt32() == 210641);
+        Assert.Equal("Schladming", schladming.GetProperty("messstelle").GetString());
+        Assert.Equal("Enns", schladming.GetProperty("gewaesser").GetString());
+        Assert.Equal("keine Daten", schladming.GetProperty("lage").GetString());
+        Assert.Contains("5 Messstellen ohne Daten:", antwort.GetProperty("zusammenfassung").GetString());
+        Assert.Contains("Schladming (Enns)", antwort.GetProperty("zusammenfassung").GetString());
         Assert.Equal("2026-10-02T21:07+02:00", antwort.GetProperty("stand_abruf").GetString());
         Assert.Contains(PegelAuskunft.Hinweis, Hinweise(antwort));
     }
@@ -167,7 +175,10 @@ public class PegelAuskunftTests
         Assert.Equal("gleich", stufen[1].GetProperty("messstellen")[0].GetProperty("tendenz").GetString());
         Assert.Equal("sinkend", stufen[2].GetProperty("messstellen")[0].GetProperty("tendenz").GetString());
 
-        // Der undokumentierte Code 700 wird nicht als Hochwasser gedeutet.
+        // Der undokumentierte Code 700 wird nicht als Hochwasser gedeutet, sondern als unbekannt ausgewiesen.
+        var unbekannt = Json(teil).GetProperty("ohne_daten").EnumerateArray().Single(m => m.GetProperty("hzbnr").GetInt32() == 200048);
+        Assert.Equal("unbekannt", unbekannt.GetProperty("lage").GetString());
+        Assert.Equal(700, unbekannt.GetProperty("gesamtcode").GetInt32());
         Assert.DoesNotContain(stufen, s => s.GetProperty("messstellen").EnumerateArray().Any(m => m.GetProperty("hzbnr").GetInt32() == 200048));
     }
 

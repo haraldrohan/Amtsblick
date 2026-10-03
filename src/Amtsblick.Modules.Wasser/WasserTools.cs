@@ -41,10 +41,11 @@ public sealed class WasserTools(PegelAuskunft auskunft)
     [Description("""
         Übersicht der Pegelmessstellen, die laut Hydrographischem Dienst mindestens erhöhte Wasserführung
         melden, gruppiert nach Stufe (erhöhte Wasserführung, Hochwasser Stufe 1 bis 3), jeweils mit Tendenz.
+        Dazu die Messstellen, die derzeit keine Daten liefern, mit Name, Gewässer und Gemeinde.
         Die Einstufung stammt aus den Quelldaten; es werden keine eigenen Warnstufen berechnet.
         Keine amtliche Warnung – maßgeblich sind die Warndienste des Landes.
         Beispielfragen: "Gibt es gerade Hochwasser in Österreich?" · "Wie ist die Hochwasserlage in
-        Niederösterreich?" · "Wo steigen die Pegel in Tirol?"
+        Niederösterreich?" · "Welche Messstellen liefern gerade keine Daten?"
         """)]
     public async Task<string> Hochwasserlage(
         [Description("Optional: Bundesland zum Einschränken, z. B. \"Oberösterreich\". Ohne Angabe ganz Österreich.")]

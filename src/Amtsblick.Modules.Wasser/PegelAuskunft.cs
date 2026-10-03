@@ -65,7 +65,7 @@ public sealed class PegelAuskunft(PegelDienst dienst, OrtResolver orte, Statisti
             zusammenfassung + StandText(stand),
             new
             {
-                Ort = new { gemeinde.Name, gemeinde.Gkz, gemeinde.Bundesland },
+                Ort =new { gemeinde.Name, gemeinde.Gkz, gemeinde.Bundesland },
                 RadiusKm = radiusKm,
                 StandAbruf = Zeit.Iso(stand.Abgerufen),
                 stand.Veraltet,
@@ -177,7 +177,14 @@ public sealed class PegelAuskunft(PegelDienst dienst, OrtResolver orte, Statisti
             .ToList();
 
         var gebiet = land ?? "Österreich";
-        var ohneDaten = messstellen.Count(m => m.Status.LageZiffer is 9 or null);
+        // Lage 9 ("keine Daten") oder ein nicht dokumentierter Code: über diese Messstellen ist keine Aussage möglich.
+        var ohneDaten = messstellen
+            .Where(m => m.Status.LageZiffer is 9 || m.Status.Lage == Pegelstatus.Unbekannt)
+            .OrderBy(m => m.Bundesland).ThenBy(m => m.Gewaesser).ThenBy(m => m.Name)
+            .ToList();
+        var ohneDatenText = ohneDaten.Count == 0
+            ? ""
+            : $" {ohneDaten.Count} Messstelle{(ohneDaten.Count == 1 ? "" : "n")} ohne Daten: {string.Join(", ", ohneDaten.Take(8).Select(m => $"{m.Name} ({m.Gewaesser})"))}{(ohneDaten.Count > 8 ? " …" : "")}.";
         var zusammenfassung = stufen.Count == 0
             ? $"{gebiet}: keine der {messstellen.Count} Messstellen meldet erhöhte Wasserführung oder Hochwasser."
             : $"{gebiet}: {string.Join(", ", stufen.Select(s => $"{s.Anzahl}× {s.Lage}"))} (von {messstellen.Count} Messstellen).";
@@ -194,14 +201,25 @@ public sealed class PegelAuskunft(PegelDienst dienst, OrtResolver orte, Statisti
         }
 
         return new Teilantwort(
-            zusammenfassung + StandText(stand),
+            zusammenfassung + ohneDatenText + StandText(stand),
             new
             {
                 Gebiet = gebiet,
                 StandAbruf = Zeit.Iso(stand.Abgerufen),
                 stand.Veraltet,
                 MessstellenGesamt = messstellen.Count,
-                MessstellenOhneDaten = ohneDaten,
+                MessstellenOhneDaten = ohneDaten.Count,
+                OhneDaten = ohneDaten.Take(MaxJeStufe).Select(m => new
+                {
+                    m.Hzbnr,
+                    Messstelle = m.Name,
+                    m.Gewaesser,
+                    m.Gemeinde,
+                    m.Bundesland,
+                    m.Hydrodienst,
+                    m.Status.Lage,
+                    Gesamtcode = m.Status.Code,
+                }).ToList(),
                 Stufen = stufen,
             },
             [Vermerk(stand.Abgerufen)],
