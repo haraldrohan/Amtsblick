@@ -51,7 +51,7 @@ public sealed class WetterAuskunft(OrtResolver orte, WetterDienst dienst, Statis
         Datensatz: ressource.Id,
         Doi: ressource.Doi,
         Stand: Zeit.Iso(lauf),
-        Bearbeitung: "Einheiten umgerechnet (kg/m² in mm, m/s in km/h, s in min), Wind aus u/v berechnet, Werte zu Zeitblöcken zusammengefasst");
+        Bearbeitung: ressource.Bearbeitung);
 
     /// <summary>Tool <c>wetter_prognose</c>.</summary>
     public async Task<Teilantwort> PrognoseAsync(string ort, int stunden = 48, CancellationToken ct = default)

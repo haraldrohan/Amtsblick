@@ -4,7 +4,9 @@ namespace Amtsblick.Modules.Wetter.GeoSphere;
 
 /// <summary>Datensatz der GeoSphere Dataset API mit den Parametern, die Amtsblick abruft.</summary>
 /// <param name="Doi">DOI, die GeoSphere für den Datensatz vergibt, als URL.</param>
-public sealed record Ressource(string Id, string Pfad, IReadOnlyList<string> Parameter, TimeSpan Ttl, string Doi)
+/// <param name="Bearbeitung">Was Amtsblick an den Daten dieses Datensatzes verändert (Angabe nach CC BY 4.0).</param>
+public sealed record Ressource(
+    string Id, string Pfad, IReadOnlyList<string> Parameter, TimeSpan Ttl, string Doi, string Bearbeitung)
 {
     /// <summary>Stündliche Prognose, 61 h, neuer Lauf alle 3 h.</summary>
     public static Ressource Prognose { get; } = new(
@@ -12,7 +14,8 @@ public sealed record Ressource(string Id, string Pfad, IReadOnlyList<string> Par
         "timeseries/forecast/nwp-v2-1h-1km",
         ["2t", "tp", "rain", "sf", "snowlmt", "10u", "10v", "10fg", "tcc", "sund"],
         TimeSpan.FromHours(3),
-        "https://doi.org/10.60669/rv80-9d61");
+        "https://doi.org/10.60669/rv80-9d61",
+        "Einheiten umgerechnet (kg/m² in mm, m/s in km/h, s in min), Wind aus u/v berechnet, je nach Tool zu Zeitblöcken und Tageswerten zusammengefasst");
 
     /// <summary>Nowcast in 15-Minuten-Schritten, 13 Schritte.</summary>
     public static Ressource Nowcast { get; } = new(
@@ -20,7 +23,8 @@ public sealed record Ressource(string Id, string Pfad, IReadOnlyList<string> Par
         "timeseries/forecast/nowcast-v1-15min-1km",
         ["rr", "pt", "t2m", "ff", "fx"],
         TimeSpan.FromMinutes(15),
-        "https://doi.org/10.60669/ahad-4y43");
+        "https://doi.org/10.60669/ahad-4y43",
+        "Einheiten umgerechnet (kg/m² in mm, m/s in km/h), Werte gerundet");
 }
 
 public sealed record Parameterreihe(string Name, string Einheit, IReadOnlyList<double?> Werte);

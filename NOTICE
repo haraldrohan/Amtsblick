@@ -32,7 +32,7 @@ ihrer Daten.
    Vermerk:     Datenquelle: GeoSphere Austria - https://data.hub.geosphere.at
    Link:        https://data.hub.geosphere.at
    Grundlage:   https://data.hub.geosphere.at/legal
-   Bearbeitung: Einheiten umgerechnet (kg/m² in mm, m/s in km/h, s in min), Windgeschwindigkeit und
+   Bearbeitung: Einheiten umgerechnet (kg/m² in mm, m/s in km/h, s in min); bei der Prognose zusätzlich Windgeschwindigkeit und
                 -richtung aus den Komponenten u/v berechnet, Stundenwerte zu Zeitblöcken und
                 Tageswerten zusammengefasst.
 

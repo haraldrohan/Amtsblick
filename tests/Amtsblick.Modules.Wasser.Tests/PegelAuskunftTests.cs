@@ -31,6 +31,7 @@ public class PegelAuskunftTests
         var antwort = Json(teil);
 
         Assert.Contains("im Umkreis von 15 km um Steyr", teil.Zusammenfassung);
+        Assert.Contains("nächste: Steyr (Ortskai), Gewässer Enns: Durchfluss 134 m³/s, Mittelwasser, Tendenz normal.", teil.Zusammenfassung);
         Assert.EndsWith("Stand des Abrufs: 02.10. 21:07.", teil.Zusammenfassung);
         Assert.Equal("2026-10-02T21:07+02:00", antwort.GetProperty("stand_abruf").GetString());
         Assert.False(antwort.GetProperty("veraltet").GetBoolean());
@@ -222,5 +223,20 @@ public class PegelAuskunftTests
         Assert.Empty(umgebung.Netz.Anfragen);
         Assert.Contains("Kein Ort", teil.Zusammenfassung);
         Assert.Contains(PegelAuskunft.Hinweis, teil.Hinweise);
+    }
+}
+
+public class ZahlenformatTests
+{
+    [Theory]
+    [InlineData("Garsten", 30)]
+    public async Task Zusammenfassung_schreibt_Werte_ohne_angehaengte_Nullen(string ort, double radius)
+    {
+        var umgebung = new Wasserumgebung();
+
+        var teil = await umgebung.Auskunft.InDerNaeheAsync(ort, radius);
+
+        Assert.DoesNotMatch(@",\d0 (m³/s|cm)", teil.Zusammenfassung);
+        Assert.DoesNotMatch(@",00 ", teil.Zusammenfassung);
     }
 }

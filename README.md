@@ -162,7 +162,8 @@ Wortlaut, Lizenz mit Link zum Lizenztext, Link zur Quelle und die Angabe, was Am
 
 - Statistik Austria: Gemeindemittelpunkte aus den Grenzen berechnet, Schreibweise der Bezirksnamen
   vereinheitlicht, Wien als Ganzes ergänzt.
-- GeoSphere Austria: Einheiten umgerechnet, Wind aus u/v berechnet, Werte zu Zeitblöcken zusammengefasst.
+- GeoSphere Austria: Einheiten umgerechnet; bei der Prognose zusätzlich Wind aus u/v berechnet und
+  Werte zu Zeitblöcken und Tageswerten zusammengefasst.
 - eHYD: Statuscode in Lage, Tendenz und Aktualität übersetzt, Gemeinde und Entfernung ergänzt,
   Auswahl nach Ort, Gewässer oder Stufe.
 

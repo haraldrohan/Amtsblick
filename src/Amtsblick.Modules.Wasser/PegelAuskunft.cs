@@ -257,7 +257,10 @@ public sealed class PegelAuskunft(PegelDienst dienst, OrtResolver orte, Statisti
 
     private static string Kurz(Messstelle m)
     {
-        var wert = m.Wert is { } w ? $"{Zeit.Zahl(w, w >= 100 ? 0 : 2)} {m.Einheit}".Trim() : "kein Wert";
+        // Höchstens zwei Nachkommastellen, ohne angehängte Nullen: 34,2 statt 34,20.
+        var wert = m.Wert is { } w
+            ? $"{w.ToString(w >= 100 ? "0" : "0.##", System.Globalization.CultureInfo.GetCultureInfo("de-AT"))} {m.Einheit}".Trim()
+            : "kein Wert";
         return $"{m.Name}, Gewässer {m.Gewaesser}: {(m.Parameter == "W" ? "Wasserstand" : "Durchfluss")} {wert}, {m.Status.Lage}, Tendenz {m.Status.Tendenz}";
     }
 

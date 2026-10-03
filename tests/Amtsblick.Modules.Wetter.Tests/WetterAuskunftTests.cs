@@ -257,6 +257,7 @@ public class NiederschlagJetztTests
         Assert.Equal(7, schritte[0].GetProperty("boe_kmh").GetDouble());
 
         Assert.Equal("nowcast-v1-15min-1km", antwort.GetProperty("quellen")[0].GetProperty("datensatz").GetString());
+        Assert.Equal("Einheiten umgerechnet (kg/m² in mm, m/s in km/h), Werte gerundet", antwort.GetProperty("quellen")[0].GetProperty("bearbeitung").GetString());
         Assert.DoesNotContain(Hinweise(antwort), h => h.Contains(WetterAuskunft.HinweisNowcastAlt));
         Assert.Contains(WetterAuskunft.Hinweis, Hinweise(antwort));
         Assert.Equal(0, umgebung.Netz.Anzahl(PrognoseDaten));
