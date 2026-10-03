@@ -28,7 +28,7 @@ Verarbeitungen aus:
 |---|---|---|
 | IP-Adresse der anfragenden Stelle | Übertragung der Antwort; Begrenzung der Anfragen je Adresse (60 pro Minute) | nur im Arbeitsspeicher, für die Dauer des Zählfensters von einer Minute; nicht im Protokoll |
 | Inhalt der Anfrage (Tool und Parameter, etwa der Ortsname) | Beantwortung der Anfrage | nur im Arbeitsspeicher während der Bearbeitung; nicht im Protokoll |
-| Methode, Pfad, Statuscode, Dauer | technischer Betrieb und Fehlersuche | im Protokoll des Servers; ⚠ Aufbewahrung: [Dauer laut Hosting-Anbieter, höchstens 14 Tage] |
+| Methode, Pfad, Statuscode, Dauer | technischer Betrieb und Fehlersuche | nur als laufende Konsolenausgabe des Servers; sie wird nicht aufbewahrt, weil kein Protokollspeicher eingerichtet ist |
 
 Bei Connectoren in claude.ai kommt die Anfrage in der Regel von Servern von Anthropic, nicht direkt
 von Ihrem Gerät. Amtsblick erfährt dann Ihre IP-Adresse nicht.
@@ -50,9 +50,12 @@ Betreibers, aber keine Angaben über Nutzer.
 
 ### Hosting
 
-⚠ Hosting-Anbieter: [wird nach der Auswahl eingetragen, mit Sitz, Region des Rechenzentrums und
-Verweis auf den Auftragsverarbeitungsvertrag]. Vorgesehen ist ein Rechenzentrum in der EU. Ob der Anbieter an
-seinem Eingang eigene Zugriffsprotokolle mit IP-Adressen führt und wie lange, wird dann hier ergänzt.
+Vorgesehen ist Microsoft Azure (Azure Container Apps) in der Region Österreich („Austria East").
+Vertragspartner ist Microsoft Ireland Operations Limited; die Auftragsverarbeitung regelt der
+[Datenschutznachtrag von Microsoft](https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA).
+Microsoft verarbeitet am Eingang der Plattform technische Verbindungsdaten wie die IP-Adresse, um die
+Anfrage zuzustellen; Näheres in der [Datenschutzerklärung von Microsoft](https://privacy.microsoft.com/de-de/privacystatement).
+⚠ Der Abschnitt wird mit der Inbetriebnahme bestätigt.
 
 ## Lokale Nutzung
 

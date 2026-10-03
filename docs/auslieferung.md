@@ -15,12 +15,12 @@ geprüft; NuGet, MCP Registry, Hosting und GitHub Pages warten auf die Freigabe 
 | Schritt | Stand | Geprüft durch |
 |---|---|---|
 | 1 Tool-Metadaten | fertig | Tests am HTTP-Server: Titel, `readOnlyHint`, `destructiveHint`, `openWorldHint`, Server-Info, Quellenvermerk in der Zusammenfassung |
-| 2 Gehosteter Server | Server und Container fertig; Hosting-Ziel offen | Tests (Rate-Limit, Origin, Health); Workflow „Container prüfen" baut das Image und fragt den laufenden Container ab |
+| 2 Gehosteter Server | Server und Container fertig; Azure vorbereitet, nichts angelegt | Tests (Rate-Limit, Origin, Health); Workflow „Container prüfen" baut das Image und fragt den laufenden Container ab |
 | 3 Datenschutz, Projektseite, Impressum | Entwürfe in `docs/`; GitHub Pages noch nicht eingeschaltet | – |
 | 4 NuGet-Paket | fertig, lokal gepackt | `dnx Amtsblick@0.1.0-beta --yes --add-source <Ordner>` startet den Server, acht Tools |
 | 5 Programmdateien und MCP Bundle | gebaut für vier Plattformen | Windows-Datei über stdio abgefragt; Installation in Claude Desktop per Doppelklick noch nicht geprüft |
 | 6 Einbindung dokumentiert | README und Projektseite | – |
-| 7 Release-Automatik | Workflow `release.yml`; Deployment-Schritt fehlt bis zur Wahl des Hosting-Ziels | noch kein Lauf (läuft nur bei einem Tag) |
+| 7 Release-Automatik | Workflow `release.yml` samt Deployment nach Azure | noch kein Lauf (läuft nur bei einem Tag) |
 | 8 Erstveröffentlichung | offen, gemeinsam mit dem Projektinhaber | – |
 | 9 Connectors-Verzeichnis | Checkliste und Texte unten | – |
 
@@ -60,7 +60,13 @@ Preise aus öffentlichen Quellen vom Oktober 2026, vor der Bestellung beim Anbie
 | Protokolle | Log Analytics, Aufbewahrung einstellbar | vollständig in eigener Hand | beim Anbieter, kurze Aufbewahrung |
 | Datenschutz | Auftragsverarbeitung über Microsoft-Vertrag, EU-Region | EU-Anbieter, Auftragsverarbeitungsvertrag online | US-Anbieter, EU-Region; Vertrag und Drittlandbezug prüfen |
 
-Einschätzung: Am wenigsten Arbeit im Betrieb machen Azure Container Apps und Fly.io. Am klarsten
+**Gewählt am 3. Oktober 2026: Azure Container Apps**, Region Österreich („Austria East"). Vorbereitet
+sind `infra/azure/main.bicep` (Umgebung und Container App: 0,25 vCPU, 0,5 GB, genau eine Instanz,
+kein Protokollspeicher), `infra/azure/einrichten.sh` (einmalig: Ressourcengruppe und eine Identität,
+der GitHub Actions über OIDC vertraut) und der Deployment-Schritt im Release-Workflow. In Azure ist
+noch nichts angelegt.
+
+Einschätzung vor der Wahl: Am wenigsten Arbeit im Betrieb machen Azure Container Apps und Fly.io. Am klarsten
 für die Datenschutzerklärung ist Hetzner, kostet aber laufende Serverpflege. Die Azure-Kommandozeile
 ist auf dem Entwicklungsrechner bereits installiert.
 
@@ -76,7 +82,11 @@ Quellen der Preise:
 
 Erste öffentliche Version ist `0.1.0-beta`, weil NuGet-Versionen unveränderlich sind.
 
-1. Hosting-Ziel wählen, Domain einrichten, Deployment-Schritt im Release-Workflow ergänzen.
+1. `infra/azure/einrichten.sh <kontaktadresse> [domain]` ausführen und in GitHub die Umgebung
+   `produktion` anlegen. Das Container-Image liegt nach dem ersten Lauf unter `ghcr.io`; das Paket
+   dort einmalig auf „öffentlich" stellen, damit Azure es laden kann. Für die eigene Domain einen
+   DNS-Eintrag setzen und sie mit `az containerapp hostname add` und `bind` samt verwaltetem
+   Zertifikat anbinden.
 2. Offene Angaben in Datenschutzerklärung und Impressum eintragen, GitHub Pages einschalten
    (Quelle: Ordner `docs/` im Zweig `main`).
 3. Gehosteten Server deployen und in claude.ai als eigenen Connector per URL prüfen: acht Tools,
@@ -101,7 +111,7 @@ gelesen am 3. Oktober 2026. Die Einreichung selbst macht der Projektinhaber übe
 
 | Anforderung | Ist-Stand |
 |---|---|
-| Server entfernt erreichbar über HTTPS | offen: Hosting |
+| Server entfernt erreichbar über HTTPS | offen: Deployment nach Azure |
 | Authentifizierung: OAuth 2.0 oder keine bei öffentlichen Daten | erfüllt: keine Anmeldung, nur öffentliche Daten |
 | Jedes Tool mit `title` und `readOnlyHint` bzw. `destructiveHint` | erfüllt, durch Test abgesichert |
 | In Claude als eigener Connector getestet, jedes Tool aufgerufen | offen: nach dem Deployment |

@@ -100,15 +100,36 @@ jobs:
           docker push "$image:latest"
 
   deployment:
-    name: Deployment
+    name: Deployment nach Azure Container Apps
     needs: [pruefen, container]
-    # Wird ergänzt, sobald das Hosting-Ziel feststeht; bis dahin übersprungen.
-    if: ${{ vars.HOSTING_ZIEL != '' }}
+    # Übersprungen, solange infra/azure/einrichten.sh nicht gelaufen ist.
+    if: ${{ vars.AZURE_CLIENT_ID != '' }}
     runs-on: ubuntu-latest
+    environment: produktion
+    permissions:
+      id-token: write # Anmeldung bei Azure per OIDC, ohne gespeichertes Geheimnis
+      contents: read
     steps:
-      - run: |
-          echo "Deployment für '${{ vars.HOSTING_ZIEL }}' ist noch nicht eingerichtet."
-          exit 1
+      - uses: actions/checkout@v7
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Container App anlegen oder aktualisieren
+        run: |
+          az deployment group create \
+            --resource-group "${{ vars.AZURE_RESSOURCENGRUPPE }}" \
+            --template-file infra/azure/main.bicep \
+            --parameters image="ghcr.io/${GITHUB_REPOSITORY,,}:${{ needs.pruefen.outputs.version }}" \
+                         kontakt="${{ secrets.AMTSBLICK_KONTAKT }}" \
+                         domain="${{ vars.AMTSBLICK_DOMAIN }}" \
+            --query properties.outputs.adresse.value -o tsv | tee adresse.txt
+      - name: Server antwortet
+        run: |
+          adresse="$(cat adresse.txt)"
+          for i in $(seq 1 30); do curl -fsS "$adresse/health" && break; sleep 10; done
+          curl -fsS "$adresse/health" | grep -q '"status":"bereit"'
 
   github-release:
     name: GitHub-Release

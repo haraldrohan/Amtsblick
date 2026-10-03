@@ -28,7 +28,7 @@ If you use Amtsblick as a connector via the hosted server's address, the followi
 |---|---|---|
 | IP address of the requesting party | sending the response; limiting requests per address (60 per minute) | in memory only, for the one-minute counting window; not written to logs |
 | Request content (tool and parameters, such as the place name) | answering the request | in memory only while the request is handled; not written to logs |
-| Method, path, status code, duration | technical operation and troubleshooting | server log; ⚠ retention: [as set by the hosting provider, 14 days at most] |
+| Method, path, status code, duration | technical operation and troubleshooting | live console output of the server only; it is not retained because no log store is configured |
 
 With connectors in claude.ai, requests normally come from Anthropic's servers rather than from your
 device. In that case Amtsblick does not learn your IP address.
@@ -49,9 +49,12 @@ address, but nothing about users.
 
 ### Hosting
 
-⚠ Hosting provider: [to be added once chosen, with registered office, data-centre region and a
-reference to the data processing agreement]. A data centre in the EU is planned. Whether the
-provider keeps its own access logs with IP addresses at its edge, and for how long, will be added here.
+The planned host is Microsoft Azure (Azure Container Apps) in the Austria East region. The
+contracting party is Microsoft Ireland Operations Limited; processing on our behalf is governed by the
+[Microsoft Data Protection Addendum](https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA).
+Microsoft processes technical connection data such as the IP address at the platform edge in order to
+deliver the request; see the [Microsoft privacy statement](https://privacy.microsoft.com/en-us/privacystatement).
+⚠ This section will be confirmed when the server goes live.
 
 ## Local use
 
