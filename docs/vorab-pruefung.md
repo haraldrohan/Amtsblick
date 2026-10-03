@@ -66,8 +66,7 @@ Pegelstände Österreich" unter CC BY 4.0 ausgewiesen, frei für private und kom
 Vermerk „Datenquelle: ehyd.gv.at". Das entspricht dem Zweck des Standards (RFC 9309), der den Zugriff
 von Crawlern auf Inhalte regelt. Amtsblick crawlt nicht: Es folgt keinen Links und ruft nur den
 dokumentierten Endpunkt ab, höchstens einmal pro Stunde und mit Kontaktadresse im User-Agent
-(Abrufmuster siehe README). Vor einem öffentlichen, gehosteten Betrieb geht eine Information an den
-Datengeber (BMLUK, wasserhaushalt@bmluk.gv.at); widerspricht er, wird das Modul abgeschaltet.
+(Abrufmuster siehe README).
 
 **Antwortverhalten** (am Prüftag von Hand mit Projekt-URL im User-Agent: zweimal `/collections`,
 einmal `items`; dazu ein Abnahmelauf des Servers mit je einem Abruf):

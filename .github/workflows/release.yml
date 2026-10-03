@@ -1,0 +1,204 @@
+name: Release
+
+# Ein Tag v<Version> veröffentlicht alles: GitHub-Release mit Programmdateien und MCP Bundles,
+# NuGet-Paket, Container-Image, Deployment und Eintrag in der MCP Registry.
+# Der Tag wird nur mit Freigabe des Projektinhabers gesetzt; ohne Tag läuft hier nichts.
+#
+# Einmalig einzurichten:
+#   Secret   NUGET_API_KEY   API-Schlüssel von NuGet.org mit Push-Recht für das Paket "Amtsblick"
+#   Variable SERVER_URL      Adresse des gehosteten Servers ohne Pfad, z. B. https://amtsblick.example.at
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+
+jobs:
+  pruefen:
+    name: Tests und Versionsabgleich
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Version aus dem Tag muss der Paketversion entsprechen
+        id: version
+        run: |
+          version="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' Directory.Build.props)"
+          test "v$version" = "$GITHUB_REF_NAME" || { echo "Tag $GITHUB_REF_NAME passt nicht zur Paketversion $version"; exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # Der Build prüft zusätzlich, dass beide Versionen in .mcp/server.json übereinstimmen.
+      - run: dotnet build -c Release
+      - run: dotnet test -c Release --no-build
+
+  paket:
+    name: NuGet-Paket bauen
+    needs: pruefen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet pack src/Amtsblick.Server -c Release -o artifacts/nuget
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nuget
+          path: artifacts/nuget/*.nupkg
+          if-no-files-found: error
+
+  bundles:
+    name: Programmdateien und MCP Bundles
+    needs: pruefen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+      - run: bash scripts/baue-auslieferung.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release
+          path: artifacts/release/*
+          if-no-files-found: error
+
+  container:
+    name: Container-Image
+    needs: pruefen
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Bauen und prüfen
+        run: |
+          docker build -t amtsblick:release .
+          docker run -d --name amtsblick -p 8080:8080 amtsblick:release
+          for i in $(seq 1 30); do curl -fsS http://localhost:8080/health && break; sleep 1; done
+          curl -fsS http://localhost:8080/health | grep -q '"status":"bereit"'
+      - name: Nach ghcr.io schieben
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          docker tag amtsblick:release "$image:${{ needs.pruefen.outputs.version }}"
+          docker tag amtsblick:release "$image:latest"
+          docker push "$image:${{ needs.pruefen.outputs.version }}"
+          docker push "$image:latest"
+
+  deployment:
+    name: Deployment
+    needs: [pruefen, container]
+    # Wird ergänzt, sobald das Hosting-Ziel feststeht; bis dahin übersprungen.
+    if: ${{ vars.HOSTING_ZIEL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Deployment für '${{ vars.HOSTING_ZIEL }}' ist noch nicht eingerichtet."
+          exit 1
+
+  github-release:
+    name: GitHub-Release
+    needs: [pruefen, paket, bundles]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v4
+        with:
+          path: dateien
+          merge-multiple: true
+      - name: Release anlegen und Dateien anhängen
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          vorab=""
+          case "${{ needs.pruefen.outputs.version }}" in *-*) vorab="--prerelease" ;; esac
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" dateien/* --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" dateien/* --title "Amtsblick ${{ needs.pruefen.outputs.version }}" --generate-notes $vorab
+          fi
+
+  nuget:
+    name: NuGet.org
+    needs: [pruefen, paket, bundles, container]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/download-artifact@v4
+        with:
+          name: nuget
+          path: nuget
+      - name: Paket veröffentlichen
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          test -n "$NUGET_API_KEY" || { echo "Secret NUGET_API_KEY fehlt"; exit 1; }
+          dotnet nuget push nuget/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+  registry:
+    name: MCP Registry
+    needs: [pruefen, nuget]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # für die Anmeldung per GitHub OIDC
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      # Die Registry prüft das Paket auf NuGet.org; dort ist es erst nach der Validierung abrufbar.
+      - name: Auf die Validierung bei NuGet.org warten
+        run: |
+          version="${{ needs.pruefen.outputs.version }}"
+          for i in $(seq 1 60); do
+            curl -fsS https://api.nuget.org/v3-flatcontainer/amtsblick/index.json | grep -q "\"${version,,}\"" && exit 0
+            sleep 30
+          done
+          echo "Paket nach 30 Minuten noch nicht auf NuGet.org verfügbar"; exit 1
+
+      - name: mcp-publisher laden
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Veröffentlichen
+        working-directory: src/Amtsblick.Server/.mcp
+        run: |
+          "$GITHUB_WORKSPACE/mcp-publisher" validate
+          "$GITHUB_WORKSPACE/mcp-publisher" login github-oidc
+          "$GITHUB_WORKSPACE/mcp-publisher" publish
+
+  nachpruefung:
+    name: Nachprüfung
+    needs: [pruefen, registry]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Eintrag in der MCP Registry abrufbar
+        run: |
+          curl -fsS "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.haraldrohan/amtsblick" | tee eintrag.json
+          grep -q '"io.github.haraldrohan/amtsblick"' eintrag.json
+          grep -q '"${{ needs.pruefen.outputs.version }}"' eintrag.json
+
+      - name: Gehosteter Server antwortet
+        if: ${{ vars.SERVER_URL != '' }}
+        run: |
+          curl -fsS "${{ vars.SERVER_URL }}/health" | tee health.json
+          grep -q '"status":"bereit"' health.json
+          curl -fsS -X POST "${{ vars.SERVER_URL }}/mcp" -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | grep -o '"name":"[a-z_]*"' | sort -u | wc -l | grep -qx 8

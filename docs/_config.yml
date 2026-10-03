@@ -1,0 +1,9 @@
+title: Amtsblick
+description: Amtliche österreichische Daten nach Ort, als MCP-Server. Privates Open-Source-Projekt, kein offizielles Angebot einer Behörde.
+lang: de
+theme: jekyll-theme-minimal
+logo: /assets/icon.png
+show_downloads: false
+github:
+  is_project_page: true
+  repository_url: https://github.com/haraldrohan/Amtsblick

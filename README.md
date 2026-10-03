@@ -6,6 +6,8 @@ Amtsblick ist ein MCP-Server, der amtliche österreichische Daten über den Ort 
 KI-Assistent fragt nach einer Gemeinde und bekommt Wetter und Pegelstände dazu – jeweils mit
 Quellenvermerk, Stand und Einheiten.
 
+**Amtsblick ist ein privates Open-Source-Projekt und kein offizielles Angebot einer Behörde.**
+
 Phase 1 umfasst den gemeinsamen Kern (Ortsverzeichnis, Quellenvermerk, Cache, Kontingent), das Modul
 **Wetter** (GeoSphere Austria) und das Modul **Wasser** (eHYD-Pegel). Weitere Module folgen nach
 demselben Muster.
@@ -41,56 +43,84 @@ mit `quellen` und `hinweise`. Jeder Eintrag in `quellen` enthält Quelle, Lizenz
 Lizenztext, den vorgeschriebenen Vermerk, Link, Datensatz, gegebenenfalls DOI, Stand und eine Angabe,
 wie Amtsblick die Daten aufbereitet hat.
 
-## Schnellstart
+## Einbinden
 
-Voraussetzung: [.NET 10 SDK](https://dotnet.microsoft.com/download).
+Es gibt vier Wege. Der Stand der einzelnen Wege steht jeweils dabei; was noch nicht veröffentlicht
+ist, ist so gekennzeichnet.
 
-```sh
-# 1. Gemeinden der Statistik Austria importieren (einmalig, rund 90 MB Download, 60 MB SQLite)
-scripts/import-gemeinden.sh        # Windows: scripts\import-gemeinden.ps1
+| Weg | Für wen | Voraussetzung | Stand |
+|---|---|---|---|
+| Connector per URL | claude.ai, Claude Desktop, Claude mobil | keine | folgt mit dem gehosteten Server |
+| MCP Bundle (`.mcpb`) | Claude Desktop, lokal | keine, auch kein .NET | folgt mit dem ersten Release |
+| NuGet-Paket über `dnx` | Claude Code, VS Code, Visual Studio | .NET 10 SDK | folgt mit dem ersten Release |
+| Aus dem Quelltext | Entwicklung | .NET 10 SDK | verfügbar |
 
-# 2. Bauen und testen
-dotnet build -c Release
-dotnet test
-```
-
-Ohne Import laufen die Tools, melden aber bei jeder Ortsangabe, dass die Referenzdaten fehlen.
-
-### Kontaktadresse setzen
+### Kontaktadresse
 
 Der User-Agent lautet `Amtsblick/<version> (+<Repo-URL>; <Kontaktadresse>)`. Die Kontaktadresse
-gehört dem Betreiber der jeweiligen Instanz und steht deshalb nicht im Repository. Setzen Sie sie in
-`appsettings.json` (`Amtsblick:Kontakt`) oder als Umgebungsvariable `Amtsblick__Kontakt`.
-**Ohne Kontaktadresse ruft das Modul Wasser nichts ab.**
+gehört dem Betreiber der jeweiligen Instanz und steht deshalb nicht im Repository. Wer Amtsblick
+lokal betreibt, setzt sie über die Umgebungsvariable `Amtsblick__Kontakt`.
+**Ohne Kontaktadresse ruft das Modul Wasser nichts ab;** Wetter und Ortssuche funktionieren auch ohne.
+Beim gehosteten Server ist sie vom Betreiber gesetzt.
 
-### Transport 1: stdio (Claude Desktop)
+### claude.ai, Claude Desktop und Claude mobil: Connector per URL
 
-In `claude_desktop_config.json` (Claude Desktop → Einstellungen → Entwickler → Konfiguration bearbeiten):
+Einstellungen → Connectors → eigenen Connector hinzufügen, als URL die Adresse des gehosteten Servers
+mit dem Pfad `/mcp`. Eine Anmeldung ist nicht nötig. Die Adresse wird hier eingetragen, sobald der
+Server in Betrieb ist.
+
+### Claude Desktop lokal: MCP Bundle
+
+Die Datei `amtsblick-<version>-<plattform>.mcpb` aus dem
+[GitHub-Release](https://github.com/haraldrohan/Amtsblick/releases) laden und doppelklicken. Claude
+Desktop fragt bei der Installation nach der Kontaktadresse. Ein installiertes .NET ist nicht nötig.
+Plattformen: `win-x64`, `osx-arm64` (Apple Silicon), `osx-x64` (Intel-Mac), `linux-x64`; je rund 45 MB.
+
+Beim ersten Start lädt Amtsblick einmalig die Gemeindegrenzen der Statistik Austria (rund 90 MB
+Download, 60 MB auf der Platte, ein bis zwei Minuten). Bis dahin antworten die Tools mit dem Hinweis,
+dass die Gemeindedaten geladen werden. Sie liegen danach unter `%LOCALAPPDATA%\Amtsblick` bzw.
+`~/.local/share/Amtsblick`.
+
+### Claude Code
+
+```sh
+# gehosteter Server
+claude mcp add --transport http amtsblick <URL>/mcp
+
+# lokal über NuGet
+claude mcp add amtsblick --env Amtsblick__Kontakt=ihre.adresse@example.org -- dnx Amtsblick@<version> --yes
+```
+
+### VS Code und Visual Studio
+
+In `.vscode/mcp.json` bzw. `.mcp.json`:
 
 ```json
 {
-  "mcpServers": {
+  "servers": {
     "amtsblick": {
-      "command": "dotnet",
-      "args": [
-        "C:\\Pfad\\zu\\Amtsblick\\src\\Amtsblick.Server\\bin\\Release\\net10.0\\Amtsblick.Server.dll",
-        "--stdio"
-      ],
-      "env": {
-        "Amtsblick__Kontakt": "ihre.adresse@example.org"
-      }
+      "type": "stdio",
+      "command": "dnx",
+      "args": ["Amtsblick@<version>", "--yes"],
+      "env": { "Amtsblick__Kontakt": "ihre.adresse@example.org" }
     }
   }
 }
 ```
 
-Danach Claude Desktop neu starten. Der Server sucht Konfiguration und Daten relativ zur Programmdatei,
-das Arbeitsverzeichnis spielt keine Rolle. Protokollausgaben gehen nach stderr.
+Für den gehosteten Server stattdessen `{ "type": "http", "url": "<URL>/mcp" }`.
 
-### stdio in Claude Code
+### Aus dem Quelltext
 
-Im Wurzelordner des Repositorys eine Datei `.mcp.json` anlegen (sie ist von Git ausgenommen, weil sie
-die Kontaktadresse enthält):
+Voraussetzung: [.NET 10 SDK](https://dotnet.microsoft.com/download).
+
+```sh
+dotnet build -c Release
+dotnet test
+```
+
+Der Server startet ohne Argument über stdio. Für Claude Code im Wurzelordner eine Datei `.mcp.json`
+anlegen (sie ist von Git ausgenommen, weil sie die Kontaktadresse enthält):
 
 ```json
 {
@@ -98,34 +128,48 @@ die Kontaktadresse enthält):
     "amtsblick": {
       "type": "stdio",
       "command": "dotnet",
-      "args": [
-        "C:\\Pfad\\zu\\Amtsblick\\src\\Amtsblick.Server\\bin\\Release\\net10.0\\Amtsblick.Server.dll",
-        "--stdio"
-      ],
-      "env": {
-        "Amtsblick__Kontakt": "ihre.adresse@example.org"
-      }
+      "args": ["C:\Pfad\zu\Amtsblick\src\Amtsblick.Server\bin\Release\net10.0\Amtsblick.Server.dll"],
+      "env": { "Amtsblick__Kontakt": "ihre.adresse@example.org" }
     }
   }
 }
 ```
 
-Beim nächsten Öffnen des Ordners fragt Claude Code einmal, ob der Server zugelassen werden soll.
-Solange Claude Code oder Claude Desktop den Server verwenden, ist die DLL gesperrt; für einen neuen
-`dotnet build -c Release` den Client vorher schließen.
+Für Claude Desktop gehört derselbe Eintrag in die `claude_desktop_config.json`. Solange ein Client
+den Server geladen hat, ist die DLL gesperrt; vor einem neuen Build den Client schließen oder den
+Server aus einer Kopie starten (`dotnet publish -o <Ordner>`).
 
-### Transport 2: Streamable HTTP
+Die Gemeinden lädt der Server beim ersten Start selbst. Von Hand geht es mit
+`scripts/import-gemeinden.sh` (Windows: `scripts\import-gemeinden.ps1`); im Repository landen sie
+unter `data/`.
+
+## Selbst hosten
 
 ```sh
-Amtsblick__Kontakt=ihre.adresse@example.org dotnet run --project src/Amtsblick.Server -c Release
+# direkt
+Amtsblick__Kontakt=betrieb@example.org dotnet run --project src/Amtsblick.Server -c Release -- --http
+
+# als Container
+docker build -t amtsblick .
+docker run --rm -p 8080:8080 -e Amtsblick__Kontakt=betrieb@example.org amtsblick
 ```
 
-Der MCP-Endpunkt ist `http://localhost:5210/mcp` (zustandslos). Einbinden zum Beispiel mit
-`claude mcp add --transport http amtsblick http://localhost:5210/mcp`.
+Der MCP-Endpunkt ist `/mcp` (Streamable HTTP, zustandslos), der Zustand steht unter `/health`.
+Direkt gestartet lauscht der Server auf `http://localhost:5210`, im Container auf Port 8080.
 
-Für den Betrieb unter einem anderen Namen oder Port `Urls` und `AllowedHosts` anpassen.
-`AllowedHosts` soll die tatsächlichen Hostnamen nennen, nicht `*` (Schutz vor DNS-Rebinding).
-Der Server hat keine eigene Authentifizierung; öffentlich nur hinter einem Reverse Proxy betreiben.
+- **HTTPS** stellt der Hosting-Anbieter oder ein vorgeschalteter Reverse Proxy bereit; der Server
+  selbst spricht nur HTTP.
+- **Ohne Anmeldung:** Der Server liest nur öffentliche Daten. Dafür gilt ein Rate-Limit je Client-IP
+  (`Http:AnfragenProMinute`, Standard 60); darüber antwortet er mit 429.
+- **Origin-Prüfung:** Browser-Anfragen werden nur von `Http:ErlaubteUrspruenge` (Standard
+  `https://claude.ai`, `https://claude.com`) und von localhost angenommen, sonst 403. Anfragen ohne
+  Origin-Header (Server zu Server) sind erlaubt.
+- **Hostnamen:** `AllowedHosts` soll den öffentlichen Hostnamen nennen, nicht `*` (Schutz vor
+  DNS-Rebinding). Hinter einem Proxy `Http:HinterProxy` einschalten, damit das Rate-Limit die
+  Client-IP aus `X-Forwarded-For` nimmt.
+- **Logs:** nur Methode, Pfad, Statuscode und Dauer. Keine IP-Adresse, keine Anfrageinhalte, keine Orte.
+- **Pegel vorladen:** Im Container ist `Module:Wasser:Vorladen` eingeschaltet; der Bestand wird
+  stündlich geholt, das Abrufmuster bleibt bei einem Abruf pro Stunde.
 
 ## Konfiguration
 
@@ -136,10 +180,14 @@ Umgebungsvariable setzen (`:` wird zu `__`).
 |---|---|---|
 | `Kontakt` | leer | Kontaktadresse für den User-Agent; Pflicht für das Modul Wasser |
 | `RepoUrl` | `https://github.com/haraldrohan/Amtsblick` | Projekt-URL im User-Agent |
-| `DatenVerzeichnis` | leer | Ort von `gemeinden.sqlite`; leer = `data/` im Repository |
+| `DatenVerzeichnis` | leer | Ort der Gemeindedaten und des letzten Pegelstands; leer = `data/` im Repository, sonst `Amtsblick` im lokalen Anwendungsdatenordner des Benutzers |
+| `AutoImport` | `true` | fehlende Gemeindedaten beim Start selbst laden |
 | `Module:Wetter:Aktiv` | `true` | Modul Wetter samt `lage_am_ort` |
 | `Module:Wasser:Aktiv` | `true` | Modul Wasser |
 | `Module:Wasser:Vorladen` | `false` | nur gehostet: Pegel stündlich im Hintergrund vorladen |
+| `Http:AnfragenProMinute` | `60` | Rate-Limit je Client-IP für den HTTP-Transport |
+| `Http:ErlaubteUrspruenge` | `https://claude.ai`, `https://claude.com` | Ursprünge, deren Browser-Anfragen angenommen werden |
+| `Http:HinterProxy` | `false` | Client-IP aus `X-Forwarded-For` des vorgeschalteten Proxys nehmen |
 
 Ein beim Start abgeschaltetes Modul wird nicht registriert: seine Tools erscheinen nicht und es ruft
 nichts ab. `Module:Wasser:Aktiv` wirkt zusätzlich sofort: Wird der Wert in der `appsettings.json`
@@ -159,7 +207,9 @@ nutzbar, sofern die Namensnennung erfolgt. Die Daten bleiben unter der Lizenz de
 | [GeoSphere Austria](https://data.hub.geosphere.at) | `nwp-v2-1h-1km` ([DOI](https://doi.org/10.60669/rv80-9d61)), `nowcast-v1-15min-1km` ([DOI](https://doi.org/10.60669/ahad-4y43)) | Datenquelle: GeoSphere Austria - https://data.hub.geosphere.at | [Nutzungsbedingungen](https://data.hub.geosphere.at/legal), Lizenz je Datensatz |
 | [eHYD](https://ehyd.gv.at) (Rechteinhaber: BMLUK und Bundesländer) | `i000501:pegel_aktuell` | Datenquelle: [ehyd.gv.at](https://ehyd.gv.at) | [INSPIRE-Metadaten](https://geoportal.inspire.gv.at/metadatensuche/inspire/api/records/6a67faa7-3ad7-4faf-91e9-17a518d10685) |
 
-Die Pflichten aus CC BY 4.0 erfüllt jede Antwort im Feld `quellen`: Namensnennung im verlangten
+Die Pflichten aus CC BY 4.0 erfüllt jede Antwort zweifach: am Ende der Zusammenfassung steht der
+Vermerk mit Lizenz, Link zum Lizenztext und dem Zusatz, dass die Daten umgerechnet und zusammengefasst
+bzw. aufbereitet wurden; ausführlich steht es im Feld `quellen`: Namensnennung im verlangten
 Wortlaut, Lizenz mit Link zum Lizenztext, Link zur Quelle und die Angabe, was Amtsblick verändert hat:
 
 - Statistik Austria: Gemeindemittelpunkte aus den Grenzen berechnet, Schreibweise der Bezirksnamen
@@ -222,8 +272,6 @@ zwar zurückhaltend so:
   403 oder 429, wird nicht auf dem zweiten Weg nachgefasst.
 - Jede Anfrage trägt den User-Agent mit Kontaktadresse; ohne Kontaktadresse wird nicht abgerufen.
 - Das Modul ist per Konfiguration sofort abschaltbar (siehe oben).
-- Vor einem öffentlichen, gehosteten Betrieb wird das BMLUK als Datengeber über Amtsblick und dieses
-  Abrufmuster informiert (wasserhaushalt@bmluk.gv.at). Widerspricht es, wird das Modul abgeschaltet.
 
 Jede Pegel-Antwort nennt den Stand des letzten Abrufs; die Werte können bis zu einer Stunde älter
 sein als beim Hydrographischen Dienst. Lage (Nieder-/Mittelwasser, erhöhte Wasserführung,
@@ -242,8 +290,10 @@ der Inneren Stadt, damit die Stadt als Ganzes auffindbar ist.
 
 Amtsblick speichert keine Anfragen und keine Daten von Nutzern und sendet keine Telemetrie. Im Speicher
 liegen nur die zuletzt abgerufenen Daten der Quellen, auf der Platte nur die Gemeinden und der letzte
-Pegelstand; an die Quellen gehen nur Koordinaten (auf 0,01°
-gerundet) bzw. der Abruf des Gesamtbestands.
+Pegelstand. An die Quellen gehen nur Koordinaten (auf 0,01° gerundet) bzw. der Abruf des
+Gesamtbestands. Der gehostete Server protokolliert nur Methode, Pfad, Statuscode und Dauer, ohne
+IP-Adresse. Die vollständige Erklärung steht in [docs/datenschutz.md](docs/datenschutz.md)
+([English](docs/privacy.md)).
 
 ## Aufbau
 
@@ -251,9 +301,11 @@ gerundet) bzw. der Abruf des Gesamtbestands.
 src/Amtsblick.Core            Ortsmodell, Quellenvermerk, Cache, HTTP-Basis, Kontingent, Kern-Tools
 src/Amtsblick.Modules.Wetter  GeoSphere-Adapter und Tools
 src/Amtsblick.Modules.Wasser  eHYD-Adapter und Tools
-src/Amtsblick.Server          MCP-Host (stdio und Streamable HTTP), lage_am_ort, Import
+src/Amtsblick.Server          MCP-Host (stdio und Streamable HTTP), lage_am_ort, Import, NuGet-Paket
 tests/                        Tests je Projekt; Fixtures sind gespeicherte Antworten der echten Dienste
-scripts/                      Import der Referenzdaten
+scripts/                      Import der Referenzdaten, Bau der Programmdateien und MCP Bundles
+packaging/                    Manifest für das MCP Bundle
+docs/                         Projektseite, Datenschutz, Prüfprotokoll
 data/                         importierte Referenzdaten (nicht eingecheckt)
 ```
 
