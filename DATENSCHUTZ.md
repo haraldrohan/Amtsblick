@@ -2,15 +2,15 @@
 
 [English version below](#privacy-policy)
 
-Stand: 3. Oktober 2026. Die mit ⚠ markierten Angaben werden vor der Inbetriebnahme des gehosteten
-Servers ergänzt.
+Stand: 3. Oktober 2026. Der mit ⚠ markierte Abschnitt wird mit der Inbetriebnahme des gehosteten
+Servers bestätigt.
 
 Amtsblick ist ein privates Open-Source-Projekt und kein offizielles Angebot einer Behörde.
 
 ## Verantwortlicher
 
-⚠ Betreiber: [Name]
-⚠ Kontakt in Datenschutzfragen: [Kontaktadresse]
+- Betreiber: Harald Rohan, Österreich
+- Kontakt in Datenschutzfragen: [haraldrohan@outlook.de](mailto:haraldrohan@outlook.de)
 
 ## Kurzfassung
 
@@ -93,15 +93,15 @@ Diese Erklärung wird angepasst, wenn sich der Dienst ändert. Der Verlauf ist i
 
 # Privacy policy
 
-Last updated: 3 October 2026. Items marked ⚠ will be completed before the hosted server goes live.
+Last updated: 3 October 2026. The section marked ⚠ will be confirmed when the hosted server goes live.
 The German version above is authoritative.
 
 Amtsblick is a private open-source project and not an official service of any public authority.
 
 ## Controller
 
-⚠ Operator: [name]
-⚠ Contact for privacy matters: [contact address]
+- Operator: Harald Rohan, Austria
+- Contact for privacy matters: [haraldrohan@outlook.de](mailto:haraldrohan@outlook.de)
 
 ## In short
 

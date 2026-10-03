@@ -13,7 +13,7 @@ geprüft; NuGet, MCP Registry und Hosting warten auf die Freigabe des Projektinh
 |---|---|---|
 | 1 Tool-Metadaten | fertig | Tests am HTTP-Server: Titel, `readOnlyHint`, `destructiveHint`, `openWorldHint`, Server-Info, Quellenvermerk in der Zusammenfassung |
 | 2 Gehosteter Server | Server und Container fertig; Azure vorbereitet, nichts angelegt | Tests (Rate-Limit, Origin, Health); Workflow „Container prüfen" baut das Image und fragt den laufenden Container ab |
-| 3 Datenschutz und Projektseite | `DATENSCHUTZ.md` (deutsch und englisch) im Repository; der Server liefert sie unter `/datenschutz` und eine Startseite unter `/`; Name und Kontakt des Betreibers offen | Tests am HTTP-Server |
+| 3 Datenschutz und Projektseite | `DATENSCHUTZ.md` (deutsch und englisch) im Repository; der Server liefert sie unter `/datenschutz` und eine Startseite unter `/` | Tests am HTTP-Server |
 | 4 NuGet-Paket | fertig, lokal gepackt | `dnx Amtsblick@0.1.0-beta --yes --add-source <Ordner>` startet den Server, acht Tools |
 | 5 Programmdateien und MCP Bundle | gebaut für vier Plattformen | Windows-Datei über stdio abgefragt; Installation in Claude Desktop per Doppelklick noch nicht geprüft |
 | 6 Einbindung dokumentiert | README | – |
@@ -88,7 +88,7 @@ Erste öffentliche Version ist `0.1.0-beta`, weil NuGet-Versionen unveränderlic
    dort einmalig auf „öffentlich" stellen, damit Azure es laden kann. Für die eigene Domain einen
    DNS-Eintrag setzen und sie mit `az containerapp hostname add` und `bind` samt verwaltetem
    Zertifikat anbinden.
-2. Name und Kontaktadresse des Betreibers in `DATENSCHUTZ.md` eintragen.
+2. Hosting-Abschnitt in `DATENSCHUTZ.md` nach der Inbetriebnahme bestätigen.
 3. Gehosteten Server deployen und in claude.ai als eigenen Connector per URL prüfen: acht Tools,
    die Beispielfragen zu Steyr.
 4. Adresse des Servers als `remotes` in `.mcp/server.json` und in der README eintragen; im
@@ -119,8 +119,8 @@ gelesen am 3. Oktober 2026. Die Einreichung selbst macht der Projektinhaber übe
 | Jedes Tool mit `title` und `readOnlyHint` bzw. `destructiveHint` | erfüllt, durch Test abgesichert |
 | In Claude als eigener Connector getestet, jedes Tool aufgerufen | offen: nach dem Deployment |
 | Dokumentations-URL | vorbereitet: README im Repository |
-| URL der Datenschutzerklärung | vorbereitet: `<Adresse des Servers>/datenschutz`; Name und Kontakt des Betreibers ergänzen |
-| Support-Kontakt | offen: Kontaktadresse oder GitHub Issues |
+| URL der Datenschutzerklärung | vorbereitet: `<Adresse des Servers>/datenschutz` |
+| Support-Kontakt | haraldrohan@outlook.de oder GitHub Issues |
 | Icon | vorhanden: `assets/icon-512.png` |
 | Testzugang für Prüfer | entfällt: keine Anmeldung; Testanleitung unten |
 | Konto, das einreichen darf | offen: bezahlter Claude-Tarif des Projektinhabers |
