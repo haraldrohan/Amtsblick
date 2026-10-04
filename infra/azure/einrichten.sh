@@ -24,10 +24,18 @@ az identity create --name amtsblick-github --resource-group "$gruppe" --location
 client="$(az identity show --name amtsblick-github --resource-group "$gruppe" --query clientId -o tsv)"
 principal="$(az identity show --name amtsblick-github --resource-group "$gruppe" --query principalId -o tsv)"
 
-# Nur Läufe der GitHub-Umgebung "produktion" dieses Repositorys dürfen sich anmelden.
+# Nur Läufe der GitHub-Umgebung "produktion" dieses Repositorys dürfen sich anmelden. GitHub weist
+# sich mit unveränderlichen Kennungen aus (Besitzer@ID/Repository@ID); die ältere Form mit bloßen
+# Namen wird zusätzlich hinterlegt.
+besitzer_id="$(gh api "repos/$repo" -q .owner.id)"
+repo_id="$(gh api "repos/$repo" -q .id)"
 az identity federated-credential create --name github-produktion --identity-name amtsblick-github \
   --resource-group "$gruppe" --issuer https://token.actions.githubusercontent.com \
   --subject "repo:$repo:environment:$umgebung" --audiences api://AzureADTokenExchange --output none
+az identity federated-credential create --name github-produktion-ids --identity-name amtsblick-github \
+  --resource-group "$gruppe" --issuer https://token.actions.githubusercontent.com \
+  --subject "repo:${repo%%/*}@$besitzer_id/${repo##*/}@$repo_id:environment:$umgebung" \
+  --audiences api://AzureADTokenExchange --output none
 
 # Rechte nur auf die eigene Ressourcengruppe.
 az role assignment create --assignee-object-id "$principal" --assignee-principal-type ServicePrincipal \
