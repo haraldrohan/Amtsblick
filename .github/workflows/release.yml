@@ -126,6 +126,7 @@ jobs:
                          kontakt="${{ secrets.AMTSBLICK_KONTAKT }}" \
                          domain="${{ vars.AMTSBLICK_DOMAIN }}" \
                          betreiber="${{ vars.AMTSBLICK_BETREIBER }}" \
+                         zertifikat="${{ vars.AMTSBLICK_ZERTIFIKAT }}" \
             --query properties.outputs.adresse.value -o tsv | tee adresse.txt
       - name: Server antwortet
         run: |

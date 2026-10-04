@@ -16,6 +16,9 @@ param betreiber string = ''
 @description('Eigene Domain ohne Schema, z. B. amtsblick.at. Leer: nur die Adresse der Plattform.')
 param domain string = ''
 
+@description('Name des verwalteten Zertifikats für die eigene Domain. Es entsteht einmalig mit "az containerapp hostname bind"; leer, solange die Domain noch nicht angebunden ist.')
+param zertifikat string = ''
+
 var name = 'amtsblick'
 
 // Ohne Log-Ziel: Die Konsolenausgabe ist nur im Live-Stream sichtbar und wird nicht aufbewahrt.
@@ -45,6 +48,14 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: 8080
         transport: 'auto'
         allowInsecure: false
+        // Ohne diese Angabe würde ein erneutes Deployment die angebundene Domain wieder lösen.
+        customDomains: empty(domain) || empty(zertifikat) ? [] : [
+          {
+            name: domain
+            bindingType: 'SniEnabled'
+            certificateId: resourceId('Microsoft.App/managedEnvironments/managedCertificates', umgebung.name, zertifikat)
+          }
+        ]
       }
     }
     template: {

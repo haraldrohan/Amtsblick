@@ -2,8 +2,7 @@
 
 [English version below](#privacy-policy)
 
-Stand: 3. Oktober 2026. Der mit ⚠ markierte Abschnitt wird mit der Inbetriebnahme des gehosteten
-Servers bestätigt.
+Stand: 4. Oktober 2026. Der gehostete Server läuft unter `https://amtsblick.aicodelabs.dev`.
 
 Amtsblick ist ein privates Open-Source-Projekt und kein offizielles Angebot einer Behörde.
 
@@ -53,7 +52,6 @@ Vertragspartner ist Microsoft Ireland Operations Limited; die Auftragsverarbeitu
 [Datenschutznachtrag von Microsoft](https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA).
 Microsoft verarbeitet am Eingang der Plattform technische Verbindungsdaten wie die IP-Adresse, um die
 Anfrage zuzustellen; Näheres in der [Datenschutzerklärung von Microsoft](https://privacy.microsoft.com/de-de/privacystatement).
-⚠ Dieser Abschnitt wird mit der Inbetriebnahme bestätigt.
 
 ### Startseite des Servers
 
@@ -93,7 +91,7 @@ Diese Erklärung wird angepasst, wenn sich der Dienst ändert. Der Verlauf ist i
 
 # Privacy policy
 
-Last updated: 3 October 2026. The section marked ⚠ will be confirmed when the hosted server goes live.
+Last updated: 4 October 2026. The hosted server runs at `https://amtsblick.aicodelabs.dev`.
 The German version above is authoritative.
 
 Amtsblick is a private open-source project and not an official service of any public authority.
@@ -142,7 +140,6 @@ party is Microsoft Ireland Operations Limited; processing on our behalf is gover
 [Microsoft Data Protection Addendum](https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA).
 Microsoft processes technical connection data such as the IP address at the platform edge in order to
 deliver the request; see the [Microsoft privacy statement](https://privacy.microsoft.com/en-us/privacystatement).
-⚠ This section will be confirmed when the server goes live.
 
 ### The server's start page
 

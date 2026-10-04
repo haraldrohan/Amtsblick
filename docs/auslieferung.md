@@ -4,21 +4,24 @@
 Stand: 3. Oktober 2026. Dieses Dokument hält fest, was für die Auslieferung vorbereitet ist, was
 noch eine Entscheidung braucht und wie die Erstveröffentlichung abläuft.
 
-**Veröffentlicht oder deployt ist noch nichts.** Paket, Bundles und Container sind gebaut und
-geprüft; NuGet, MCP Registry und Hosting warten auf die Freigabe des Projektinhabers.
+**Seit 4. Oktober 2026 veröffentlicht:** das NuGet-Paket `Amtsblick`, der Eintrag
+`io.github.haraldrohan/amtsblick` in der MCP Registry, das GitHub-Release mit Programmdateien und
+MCP Bundles und der gehostete Server unter `https://amtsblick.aicodelabs.dev` (Azure Container Apps,
+Region Österreich). Offen sind der Connector-Test in claude.ai, die Installation des Bundles in
+Claude Desktop und die Einreichung im Connectors-Verzeichnis.
 
 ## Stand je Schritt
 
 | Schritt | Stand | Geprüft durch |
 |---|---|---|
 | 1 Tool-Metadaten | fertig | Tests am HTTP-Server: Titel, `readOnlyHint`, `destructiveHint`, `openWorldHint`, Server-Info, Quellenvermerk in der Zusammenfassung |
-| 2 Gehosteter Server | Server und Container fertig; Azure vorbereitet, nichts angelegt | Tests (Rate-Limit, Origin, Health); Workflow „Container prüfen" baut das Image und fragt den laufenden Container ab |
+| 2 Gehosteter Server | läuft unter `https://amtsblick.aicodelabs.dev`; Connector-Test in claude.ai offen | Tests (Rate-Limit, Origin, Health); Workflow „Container prüfen" baut das Image und fragt den laufenden Container ab |
 | 3 Datenschutz und Projektseite | `DATENSCHUTZ.md` (deutsch und englisch) im Repository; der Server liefert sie unter `/datenschutz` und eine Startseite unter `/` | Tests am HTTP-Server |
-| 4 NuGet-Paket | fertig, lokal gepackt | `dnx Amtsblick@0.1.0-beta --yes --add-source <Ordner>` startet den Server, acht Tools |
+| 4 NuGet-Paket | auf NuGet.org veröffentlicht | `dnx Amtsblick@0.1.0-beta --yes` startet den Server von NuGet.org, acht Tools |
 | 5 Programmdateien und MCP Bundle | gebaut für vier Plattformen | Windows-Datei über stdio abgefragt; Installation in Claude Desktop per Doppelklick noch nicht geprüft |
 | 6 Einbindung dokumentiert | README | – |
-| 7 Release-Automatik | Workflow `release.yml` samt Deployment nach Azure | noch kein Lauf (läuft nur bei einem Tag) |
-| 8 Erstveröffentlichung | offen, gemeinsam mit dem Projektinhaber | – |
+| 7 Release-Automatik | Workflow `release.yml` samt Deployment nach Azure | Lauf für `v0.1.0-beta`: alle neun Schritte erfolgreich, zwei davon nach Korrektur der Einrichtung |
+| 8 Erstveröffentlichung | erfolgt am 4. Oktober 2026 mit `v0.1.0-beta` | Nachprüfung im Workflow: Registry-Eintrag abrufbar |
 | 9 Connectors-Verzeichnis | Checkliste und Texte unten | – |
 
 ## Abweichungen vom Zusatzauftrag
@@ -114,12 +117,12 @@ gelesen am 3. Oktober 2026. Die Einreichung selbst macht der Projektinhaber übe
 
 | Anforderung | Ist-Stand |
 |---|---|
-| Server entfernt erreichbar über HTTPS | offen: Deployment nach Azure |
+| Server entfernt erreichbar über HTTPS | erfüllt: `https://amtsblick.aicodelabs.dev/mcp` |
 | Authentifizierung: OAuth 2.0 oder keine bei öffentlichen Daten | erfüllt: keine Anmeldung, nur öffentliche Daten |
 | Jedes Tool mit `title` und `readOnlyHint` bzw. `destructiveHint` | erfüllt, durch Test abgesichert |
 | In Claude als eigener Connector getestet, jedes Tool aufgerufen | offen: nach dem Deployment |
 | Dokumentations-URL | vorbereitet: README im Repository |
-| URL der Datenschutzerklärung | vorbereitet: `<Adresse des Servers>/datenschutz` |
+| URL der Datenschutzerklärung | erfüllt: `https://amtsblick.aicodelabs.dev/datenschutz` |
 | Support-Kontakt | haraldrohan@outlook.de oder GitHub Issues |
 | Icon | vorhanden: `assets/icon-512.png` |
 | Testzugang für Prüfer | entfällt: keine Anmeldung; Testanleitung unten |

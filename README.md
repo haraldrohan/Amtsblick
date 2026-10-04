@@ -45,14 +45,15 @@ wie Amtsblick die Daten aufbereitet hat.
 
 ## Einbinden
 
-Es gibt vier Wege. Der Stand der einzelnen Wege steht jeweils dabei; was noch nicht veröffentlicht
-ist, ist so gekennzeichnet.
+Es gibt vier Wege. Der gehostete Server läuft unter **`https://amtsblick.aicodelabs.dev`**; das Paket
+steht auf [NuGet.org](https://www.nuget.org/packages/Amtsblick) und in der MCP Registry als
+`io.github.haraldrohan/amtsblick`.
 
 | Weg | Für wen | Voraussetzung | Stand |
 |---|---|---|---|
-| Connector per URL | claude.ai, Claude Desktop, Claude mobil | keine | folgt mit dem gehosteten Server |
-| MCP Bundle (`.mcpb`) | Claude Desktop, lokal | keine, auch kein .NET | folgt mit dem ersten Release |
-| NuGet-Paket über `dnx` | Claude Code, VS Code, Visual Studio | .NET 10 SDK | folgt mit dem ersten Release |
+| Connector per URL | claude.ai, Claude Desktop, Claude mobil | keine | verfügbar |
+| MCP Bundle (`.mcpb`) | Claude Desktop, lokal | keine, auch kein .NET | verfügbar (Vorabversion) |
+| NuGet-Paket über `dnx` | Claude Code, VS Code, Visual Studio | .NET 10 SDK | verfügbar (Vorabversion) |
 | Aus dem Quelltext | Entwicklung | .NET 10 SDK | verfügbar |
 
 ### Kontaktadresse
@@ -65,9 +66,8 @@ Beim gehosteten Server ist sie vom Betreiber gesetzt.
 
 ### claude.ai, Claude Desktop und Claude mobil: Connector per URL
 
-Einstellungen → Connectors → eigenen Connector hinzufügen, als URL die Adresse des gehosteten Servers
-mit dem Pfad `/mcp`. Eine Anmeldung ist nicht nötig. Die Adresse wird hier eingetragen, sobald der
-Server in Betrieb ist.
+Einstellungen → Connectors → eigenen Connector hinzufügen, als URL
+`https://amtsblick.aicodelabs.dev/mcp`. Eine Anmeldung ist nicht nötig.
 
 ### Claude Desktop lokal: MCP Bundle
 
@@ -85,10 +85,10 @@ dass die Gemeindedaten geladen werden. Sie liegen danach unter `%LOCALAPPDATA%\A
 
 ```sh
 # gehosteter Server
-claude mcp add --transport http amtsblick <URL>/mcp
+claude mcp add --transport http amtsblick https://amtsblick.aicodelabs.dev/mcp
 
 # lokal über NuGet
-claude mcp add amtsblick --env Amtsblick__Kontakt=ihre.adresse@example.org -- dnx Amtsblick@<version> --yes
+claude mcp add amtsblick --env Amtsblick__Kontakt=ihre.adresse@example.org -- dnx Amtsblick@0.1.1-beta --yes
 ```
 
 ### VS Code und Visual Studio
@@ -101,14 +101,15 @@ In `.vscode/mcp.json` bzw. `.mcp.json`:
     "amtsblick": {
       "type": "stdio",
       "command": "dnx",
-      "args": ["Amtsblick@<version>", "--yes"],
+      "args": ["Amtsblick@0.1.1-beta", "--yes"],
       "env": { "Amtsblick__Kontakt": "ihre.adresse@example.org" }
     }
   }
 }
 ```
 
-Für den gehosteten Server stattdessen `{ "type": "http", "url": "<URL>/mcp" }`.
+Für den gehosteten Server stattdessen `{ "type": "http", "url": "https://amtsblick.aicodelabs.dev/mcp" }`.
+Die aktuelle Paketversion steht auf [NuGet.org](https://www.nuget.org/packages/Amtsblick).
 
 ### Aus dem Quelltext
 

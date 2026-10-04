@@ -3,8 +3,8 @@
   "name": "io.github.haraldrohan/amtsblick",
   "title": "Amtsblick",
   "description": "Wetter und Pegel je Gemeinde in Österreich. Privates Projekt, kein offizielles Behördenangebot.",
-  "version": "0.1.0-beta",
-  "websiteUrl": "https://github.com/haraldrohan/Amtsblick",
+  "version": "0.1.1-beta",
+  "websiteUrl": "https://amtsblick.aicodelabs.dev",
   "repository": {
     "url": "https://github.com/haraldrohan/Amtsblick",
     "source": "github"
@@ -14,7 +14,7 @@
       "registryType": "nuget",
       "registryBaseUrl": "https://api.nuget.org/v3/index.json",
       "identifier": "Amtsblick",
-      "version": "0.1.0-beta",
+      "version": "0.1.1-beta",
       "transport": {
         "type": "stdio"
       },
@@ -26,6 +26,12 @@
           "isSecret": false
         }
       ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://amtsblick.aicodelabs.dev/mcp"
     }
   ]
 }
