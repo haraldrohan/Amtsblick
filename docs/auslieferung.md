@@ -22,10 +22,14 @@ Claude Desktop und die Einreichung im Connectors-Verzeichnis.
 | 6 Einbindung dokumentiert | README | – |
 | 7 Release-Automatik | Workflow `release.yml` samt Deployment nach Azure | Lauf für `v0.1.0-beta`: alle neun Schritte erfolgreich, zwei davon nach Korrektur der Einrichtung |
 | 8 Erstveröffentlichung | erfolgt am 4. Oktober 2026 mit `v0.1.0-beta` | Nachprüfung im Workflow: Registry-Eintrag abrufbar |
-| 9 Connectors-Verzeichnis | Checkliste und Texte unten | – |
+| 9 Connectors-Verzeichnis | am 4. Oktober 2026 vom Projektinhaber eingereicht (Stand des Servers: `0.1.3-beta`); Prüfung durch Anthropic steht aus | – |
 
 ## Abweichungen vom Zusatzauftrag
 
+- **Keine Bitte ans Modell in den Tool-Beschreibungen:** Der Zusatzauftrag sah vor, dass jede
+  Beschreibung das Modell bittet, die Quelle zu nennen. Die Verzeichnisrichtlinie von Claude lässt
+  in Beschreibungen keine Anweisungen zum Modellverhalten zu. Seit `0.1.3-beta` steht dort nur, dass
+  die Antwort mit dem Quellenvermerk endet; der Vermerk selbst steht weiterhin in jeder Antwort.
 - **GitHub Pages entfällt** (Entscheidung des Projektinhabers vom 3. Oktober 2026): Die README ist
   die Projektseite, die Datenschutzerklärung liegt als `DATENSCHUTZ.md` im Repository, und der
   gehostete Server liefert Startseite und Erklärung selbst aus. Ein Impressum entfällt damit als
@@ -120,6 +124,8 @@ gelesen am 3. Oktober 2026. Die Einreichung selbst macht der Projektinhaber übe
 | Server entfernt erreichbar über HTTPS | erfüllt: `https://amtsblick.aicodelabs.dev/mcp` |
 | Authentifizierung: OAuth 2.0 oder keine bei öffentlichen Daten | erfüllt: keine Anmeldung, nur öffentliche Daten |
 | Jedes Tool mit `title` und `readOnlyHint` bzw. `destructiveHint` | erfüllt, durch Test abgesichert |
+| Tool-Beschreibungen ohne Anweisungen ans Modell und ohne Verweise auf andere Tools | erfüllt seit `0.1.3-beta`, durch Test abgesichert |
+| Eigene oder legitim eingebundene Schnittstellen | bei der Einreichung offengelegt: öffentliche Open-Data-Dienste unter CC BY 4.0, keine Partnerschaft |
 | In Claude als eigener Connector getestet, jedes Tool aufgerufen | teilweise: am 4. Oktober 2026 in claude.ai mit den beiden Fragen zu Steyr geprüft (`wetter_prognose`, `pegel_an_gewaesser`); die übrigen Tools stehen noch aus |
 | Dokumentations-URL | vorbereitet: README im Repository |
 | URL der Datenschutzerklärung | erfüllt: `https://amtsblick.aicodelabs.dev/datenschutz` |
