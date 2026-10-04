@@ -14,8 +14,7 @@ public sealed class WasserTools(PegelAuskunft auskunft)
         Der Bestand wird höchstens stündlich abgerufen. Keine amtliche Warnung.
         Beispielfragen: "Wie hoch ist die Enns in Steyr?" · "Welche Pegel gibt es rund um Schärding?" ·
         "Steigt das Wasser bei Hallein?"
-        Schließe deine Antwort mit dem Quellenvermerk vom Ende der Zusammenfassung: wörtlich, mit Lizenz und
-        Lizenzlink, nicht umformuliert. Gib auch die Hinweise der Antwort vollständig wieder.
+        Die Antwort endet mit dem Quellenvermerk des Datengebers samt Lizenz (CC BY 4.0) und Lizenzlink.
         """)]
     public async Task<string> PegelInDerNaehe(
         [Description("Gemeindename, optional \"Name, Bundesland\"; oder fünfstellige GKZ; oder Koordinate \"Breite, Länge\", z. B. \"48.04, 14.42\".")]
@@ -32,8 +31,7 @@ public sealed class WasserTools(PegelAuskunft auskunft)
         Vorschläge zurück. Der Bestand wird höchstens stündlich abgerufen. Keine amtliche Warnung.
         Beispielfragen: "Wie ist die Lage an der Donau?" · "Welche Messstellen gibt es an der Mur?" ·
         "Wie viel Wasser führt die Salzach?"
-        Schließe deine Antwort mit dem Quellenvermerk vom Ende der Zusammenfassung: wörtlich, mit Lizenz und
-        Lizenzlink, nicht umformuliert. Gib auch die Hinweise der Antwort vollständig wieder.
+        Die Antwort endet mit dem Quellenvermerk des Datengebers samt Lizenz (CC BY 4.0) und Lizenzlink.
         """)]
     public async Task<string> PegelAnGewaesser(
         [Description("Name des Gewässers ohne Artikel, z. B. \"Enns\", \"Donau\", \"Große Mühl\".")]
@@ -50,8 +48,7 @@ public sealed class WasserTools(PegelAuskunft auskunft)
         Keine amtliche Warnung – maßgeblich sind die Warndienste des Landes.
         Beispielfragen: "Gibt es gerade Hochwasser in Österreich?" · "Wie ist die Hochwasserlage in
         Niederösterreich?" · "Welche Messstellen liefern gerade keine Daten?"
-        Schließe deine Antwort mit dem Quellenvermerk vom Ende der Zusammenfassung: wörtlich, mit Lizenz und
-        Lizenzlink, nicht umformuliert. Gib auch die Hinweise der Antwort vollständig wieder.
+        Die Antwort endet mit dem Quellenvermerk des Datengebers samt Lizenz (CC BY 4.0) und Lizenzlink.
         """)]
     public async Task<string> Hochwasserlage(
         [Description("Optional: Bundesland zum Einschränken, z. B. \"Oberösterreich\". Ohne Angabe ganz Österreich.")]

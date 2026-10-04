@@ -34,12 +34,11 @@ public static class ServerRegistrierung
                 o.ServerInstructions =
                     ToolAntwort.Pflichthinweis
                     + " Amtliche österreichische Daten nach Ort: Wetter (GeoSphere Austria) und Pegel (eHYD). "
-                    + "Orte sind Gemeinden; bei mehrdeutigen Namen zuerst ort_finden nutzen. "
-                    + "Jede Antwort endet in der Zusammenfassung mit dem Quellenvermerk der Datengeber. Gib ihn am Ende "
-                    + "deiner Antwort wörtlich wieder, mit Lizenz und Lizenzlink, und formuliere ihn nicht um; die Lizenz "
-                    + "CC BY 4.0 verlangt das. Gib auch die Hinweise vollständig weiter, etwa den Verweis auf die "
-                    + "Warndienste des Landes. "
-                    + "Die Daten ersetzen keine amtlichen Warnungen.";
+                    + "Orte sind Gemeinden; mehrdeutige Namen beantwortet der Server mit der Liste der Kandidaten. "
+                    + "Jede Antwort endet in der Zusammenfassung mit dem Quellenvermerk des Datengebers samt Lizenz "
+                    + "CC BY 4.0; die Lizenz verlangt, ihn bei Weitergabe der Daten wörtlich zu nennen. "
+                    + "Die Daten ersetzen keine amtlichen Warnungen; maßgeblich sind die Warndienste der GeoSphere "
+                    + "Austria und der Länder.";
             })
             .WithTools<KernTools>();
 
@@ -77,6 +76,8 @@ public static class ServerRegistrierung
         app.MapGet("/health", Gesundheit.Antwort);
         app.MapGet("/", Seiten.Start);
         app.MapGet("/datenschutz", Seiten.Datenschutz);
+        app.MapGet("/favicon.ico", Seiten.Symbol);
+        app.MapGet("/icon.png", Seiten.Symbol);
         return app;
     }
 }

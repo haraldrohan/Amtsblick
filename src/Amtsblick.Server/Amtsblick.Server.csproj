@@ -52,6 +52,7 @@
   <!-- Die Datenschutzerklärung aus dem Repository liefert der Server unter /datenschutz aus. -->
   <ItemGroup>
     <EmbeddedResource Include="..\..\DATENSCHUTZ.md" LogicalName="DATENSCHUTZ.md" />
+    <EmbeddedResource Include="..\..\assets\icon.png" LogicalName="icon.png" />
   </ItemGroup>
 
   <!-- Die Version steht an drei Stellen: in Directory.Build.props sowie in server.json oben und bei

@@ -20,8 +20,7 @@ public sealed class KernTools(
         "St."/"Sankt" werden gleich behandelt. Mehrdeutige Namen kommen als Liste zurück.
         Beispielfragen: "In welchem Bezirk liegt Steyr?" · "Welche Gemeinden heißen Sankt Johann?" ·
         "Zu welcher Gemeinde gehört 48.04, 14.42?"
-        Schließe deine Antwort mit dem Quellenvermerk vom Ende der Zusammenfassung: wörtlich, mit Lizenz und
-        Lizenzlink, nicht umformuliert. Gib auch die Hinweise der Antwort vollständig wieder.
+        Die Antwort endet mit dem Quellenvermerk des Datengebers samt Lizenz (CC BY 4.0) und Lizenzlink.
         """)]
     public string OrtFinden(
         [Description("Gemeindename (auch mit Tippfehler), optional mit Zusatz \"Name, Bundesland\"; oder fünfstellige GKZ; oder Koordinate \"Breite, Länge\" in Dezimalgrad, z. B. \"48.04, 14.42\".")]
@@ -62,7 +61,7 @@ public sealed class KernTools(
         sowie das verbleibende Anfragekontingent je Quelle.
         Beispielfragen: "Woher stammen die Daten?" · "Unter welcher Lizenz stehen die Pegeldaten?" ·
         "Wie viele Wetterabfragen sind in dieser Stunde noch möglich?"
-        Gib Vermerk und Lizenz je Quelle so wieder, wie sie in der Liste stehen.
+        Die Vermerke stehen im Wortlaut, den der jeweilige Datengeber verlangt.
         """)]
     public string Quellen()
     {

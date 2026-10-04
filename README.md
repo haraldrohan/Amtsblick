@@ -88,7 +88,7 @@ dass die Gemeindedaten geladen werden. Sie liegen danach unter `%LOCALAPPDATA%\A
 claude mcp add --transport http amtsblick https://amtsblick.aicodelabs.dev/mcp
 
 # lokal über NuGet
-claude mcp add amtsblick --env Amtsblick__Kontakt=ihre.adresse@example.org -- dnx Amtsblick@0.1.2-beta --yes
+claude mcp add amtsblick --env Amtsblick__Kontakt=ihre.adresse@example.org -- dnx Amtsblick@0.1.3-beta --yes
 ```
 
 ### VS Code und Visual Studio
@@ -101,7 +101,7 @@ In `.vscode/mcp.json` bzw. `.mcp.json`:
     "amtsblick": {
       "type": "stdio",
       "command": "dnx",
-      "args": ["Amtsblick@0.1.2-beta", "--yes"],
+      "args": ["Amtsblick@0.1.3-beta", "--yes"],
       "env": { "Amtsblick__Kontakt": "ihre.adresse@example.org" }
     }
   }

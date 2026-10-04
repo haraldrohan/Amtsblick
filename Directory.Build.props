@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <Version>0.1.2-beta</Version>
+    <Version>0.1.3-beta</Version>
     <Authors>Amtsblick-Mitwirkende</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/haraldrohan/Amtsblick</RepositoryUrl>

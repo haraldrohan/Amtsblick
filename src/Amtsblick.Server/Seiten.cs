@@ -54,6 +54,18 @@ public static class Seiten
             ? ""
             : $"<h2>Offenlegung</h2><p>Betreiber und Medieninhaber: {WebUtility.HtmlEncode(betreiber.Trim())}</p>";
 
+    private static readonly Lazy<byte[]> SymbolBytes = new(() =>
+    {
+        using var strom = Assembly.GetExecutingAssembly().GetManifestResourceStream("icon.png")
+            ?? throw new InvalidOperationException("icon.png ist nicht eingebettet.");
+        using var puffer = new MemoryStream();
+        strom.CopyTo(puffer);
+        return puffer.ToArray();
+    });
+
+    /// <summary>Das Projekt-Symbol; Clients und Verzeichnisse zeigen das Favicon des Servers an.</summary>
+    public static IResult Symbol() => Results.File(SymbolBytes.Value, "image/png");
+
     public static IResult Datenschutz() => Results.Content(DatenschutzHtml.Value, "text/html; charset=utf-8");
 
     private static string Rahmen(string titel, string inhalt) => $$"""
@@ -63,6 +75,7 @@ public static class Seiten
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{WebUtility.HtmlEncode(titel)}}</title>
+        <link rel="icon" type="image/png" href="/icon.png">
         <style>
           body { font: 16px/1.55 system-ui, sans-serif; max-width: 46rem; margin: 2rem auto; padding: 0 1rem; color: #1b1b1b; }
           h1, h2, h3 { line-height: 1.25; }

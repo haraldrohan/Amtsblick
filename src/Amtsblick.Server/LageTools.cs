@@ -19,12 +19,10 @@ public sealed class LageTools(OrtResolver orte, WetterAuskunft wetter, Statistik
     [Description("""
         Überblick für eine österreichische Gemeinde in einem Aufruf: aktuelles Wetter und Niederschlag der
         nächsten 3 Stunden (Nowcast), Prognose der nächsten 24 Stunden und – wenn das Modul Wasser aktiv ist –
-        die nächstgelegenen Pegel im Umkreis von 15 km. Für Einzelheiten wetter_prognose, niederschlag_jetzt
-        oder pegel_in_der_naehe verwenden. Keine amtliche Warnung.
+        die nächstgelegenen Pegel im Umkreis von 15 km. Keine amtliche Warnung.
         Beispielfragen: "Wie ist die Lage in Steyr?" · "Was ist gerade in Schärding los, Wetter und Wasser?" ·
         "Gib mir einen Überblick für Hallein."
-        Schließe deine Antwort mit dem Quellenvermerk vom Ende der Zusammenfassung: wörtlich, mit Lizenz und
-        Lizenzlink, nicht umformuliert. Gib auch die Hinweise der Antwort vollständig wieder.
+        Die Antwort endet mit dem Quellenvermerk des Datengebers samt Lizenz (CC BY 4.0) und Lizenzlink.
         """)]
     public async Task<string> LageAmOrt(
         [Description("Gemeindename, optional \"Name, Bundesland\"; oder fünfstellige GKZ; oder Koordinate \"Breite, Länge\", z. B. \"48.04, 14.42\".")]

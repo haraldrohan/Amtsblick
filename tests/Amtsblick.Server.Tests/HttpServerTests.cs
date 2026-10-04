@@ -61,7 +61,27 @@ public sealed class HttpServerTests : IAsyncLifetime
         });
         Assert.All(
             tools.Where(t => t.GetProperty("name").GetString() != "quellen"),
-            tool => Assert.Contains("Schließe deine Antwort mit dem Quellenvermerk", tool.GetProperty("description").GetString()));
+            tool => Assert.Contains("Die Antwort endet mit dem Quellenvermerk", tool.GetProperty("description").GetString()));
+    }
+
+    // Das Connectors-Verzeichnis von Claude lehnt Beschreibungen ab, die dem Modell Verhalten vorschreiben
+    // oder auf andere Tools verweisen. Beschreibungen sagen deshalb nur, was das Tool tut und liefert.
+    [Fact]
+    public async Task Tool_Beschreibungen_beschreiben_nur_und_geben_dem_Modell_keine_Anweisungen()
+    {
+        var tools = (await Rpc("tools/list")).GetProperty("result").GetProperty("tools").EnumerateArray().ToList();
+        var namen = tools.Select(t => t.GetProperty("name").GetString()!).ToList();
+
+        Assert.All(tools, tool =>
+        {
+            var name = tool.GetProperty("name").GetString()!;
+            var beschreibung = tool.GetProperty("description").GetString()!;
+            var ohneBeispiele = System.Text.RegularExpressions.Regex.Replace(beschreibung, "\"[^\"]*\"", "");
+
+            Assert.DoesNotMatch(@"(?i)\b(nenne|gib|schließe|verwende|nutze|rufe|antworte|zitiere|du sollst|musst du|immer|niemals)\b", ohneBeispiele);
+            Assert.DoesNotMatch(@"(?i)\bverwenden\b|\bzuerst\b|ignor", ohneBeispiele);
+            Assert.All(namen.Where(n => n != name), anderes => Assert.DoesNotContain(anderes, beschreibung));
+        });
     }
 
     [Fact]
@@ -214,6 +234,10 @@ public sealed class SeitenTests : IAsyncLifetime
         Assert.Contains("href=\"https://github.com/haraldrohan/Amtsblick#einbinden\"", html);
         Assert.Contains("href=\"/datenschutz\"", html);
         Assert.Contains("<code>/mcp</code>", html);
+        Assert.Contains("<link rel=\"icon\" type=\"image/png\" href=\"/icon.png\">", html);
+        var symbol = await _client.GetAsync("/favicon.ico");
+        Assert.Equal("image/png", symbol.Content.Headers.ContentType?.MediaType);
+        Assert.True((await symbol.Content.ReadAsByteArrayAsync()).Length > 1000);
         Assert.Contains("Betreiber und Medieninhaber: Erika Muster, Beispielgasse 1, 4400 Steyr &lt;test@example.org&gt;", html);
         Assert.DoesNotContain("<script", html);
         Assert.False(antwort.Headers.Contains("Set-Cookie"));
