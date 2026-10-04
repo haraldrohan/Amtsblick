@@ -20,7 +20,8 @@ public sealed class KernTools(
         "St."/"Sankt" werden gleich behandelt. Mehrdeutige Namen kommen als Liste zurück.
         Beispielfragen: "In welchem Bezirk liegt Steyr?" · "Welche Gemeinden heißen Sankt Johann?" ·
         "Zu welcher Gemeinde gehört 48.04, 14.42?"
-        Nenne in deiner Antwort die Datenquelle mit Lizenz; beides steht am Ende der Zusammenfassung.
+        Schließe deine Antwort mit dem Quellenvermerk vom Ende der Zusammenfassung: wörtlich, mit Lizenz und
+        Lizenzlink, nicht umformuliert. Gib auch die Hinweise der Antwort vollständig wieder.
         """)]
     public string OrtFinden(
         [Description("Gemeindename (auch mit Tippfehler), optional mit Zusatz \"Name, Bundesland\"; oder fünfstellige GKZ; oder Koordinate \"Breite, Länge\" in Dezimalgrad, z. B. \"48.04, 14.42\".")]

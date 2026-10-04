@@ -61,7 +61,7 @@ public sealed class HttpServerTests : IAsyncLifetime
         });
         Assert.All(
             tools.Where(t => t.GetProperty("name").GetString() != "quellen"),
-            tool => Assert.Contains("Nenne in deiner Antwort die Datenquelle", tool.GetProperty("description").GetString()));
+            tool => Assert.Contains("Schließe deine Antwort mit dem Quellenvermerk", tool.GetProperty("description").GetString()));
     }
 
     [Fact]

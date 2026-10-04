@@ -35,7 +35,10 @@ public static class ServerRegistrierung
                     ToolAntwort.Pflichthinweis
                     + " Amtliche österreichische Daten nach Ort: Wetter (GeoSphere Austria) und Pegel (eHYD). "
                     + "Orte sind Gemeinden; bei mehrdeutigen Namen zuerst ort_finden nutzen. "
-                    + "Jede Antwort enthält Quellenvermerke und Hinweise, die an Nutzer weiterzugeben sind. "
+                    + "Jede Antwort endet in der Zusammenfassung mit dem Quellenvermerk der Datengeber. Gib ihn am Ende "
+                    + "deiner Antwort wörtlich wieder, mit Lizenz und Lizenzlink, und formuliere ihn nicht um; die Lizenz "
+                    + "CC BY 4.0 verlangt das. Gib auch die Hinweise vollständig weiter, etwa den Verweis auf die "
+                    + "Warndienste des Landes. "
                     + "Die Daten ersetzen keine amtlichen Warnungen.";
             })
             .WithTools<KernTools>();

@@ -23,7 +23,8 @@ public sealed class LageTools(OrtResolver orte, WetterAuskunft wetter, Statistik
         oder pegel_in_der_naehe verwenden. Keine amtliche Warnung.
         Beispielfragen: "Wie ist die Lage in Steyr?" · "Was ist gerade in Schärding los, Wetter und Wasser?" ·
         "Gib mir einen Überblick für Hallein."
-        Nenne in deiner Antwort die Datenquelle mit Lizenz; beides steht am Ende der Zusammenfassung.
+        Schließe deine Antwort mit dem Quellenvermerk vom Ende der Zusammenfassung: wörtlich, mit Lizenz und
+        Lizenzlink, nicht umformuliert. Gib auch die Hinweise der Antwort vollständig wieder.
         """)]
     public async Task<string> LageAmOrt(
         [Description("Gemeindename, optional \"Name, Bundesland\"; oder fünfstellige GKZ; oder Koordinate \"Breite, Länge\", z. B. \"48.04, 14.42\".")]
